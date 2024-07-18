@@ -1,0 +1,22 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    font-family: "Popins", sans-serif;
+}
+.header{
+    background-color: black;
+    color: azure;
+    height: 2rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.header h2{
+    font-weight: 700;
+}
+.nav-components ul{
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    font-size: x-small;
+}

@@ -1,0 +1,10 @@
+.sidebar-opener{
+    width: 1%;
+    height: 100%;
+    position: absolute;
+}
+
+.sidebar-opener svg{
+    height: 100%;
+    width: 2rem;
+}

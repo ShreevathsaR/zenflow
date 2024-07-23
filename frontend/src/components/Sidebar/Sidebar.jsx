@@ -4,7 +4,9 @@ import { SlOptions } from "react-icons/sl";
 import { FaAnglesLeft } from "react-icons/fa6";
 import { usePageContext } from '../Contexts/PageContext';
 
-const Sidebar = () => {
+const Sidebar = ({setShowSideBar}) => {
+
+    console.log(setShowSideBar)
 
     const {page,setPage} = usePageContext();
 
@@ -19,7 +21,7 @@ const Sidebar = () => {
   return (
     <div className='sidebar'>
         <ul>
-            <div className="closing-bar"><FaAnglesLeft/></div>
+            <div className="closing-bar"><FaAnglesLeft onClick={()=>{setShowSideBar(false)}}/></div>
             <li onClick={handleNotes}>Notes <SlOptions/></li>
             <li onClick={handleTodo}>Todo <SlOptions/></li>
         </ul>

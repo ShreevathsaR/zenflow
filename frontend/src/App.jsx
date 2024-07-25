@@ -10,13 +10,17 @@ function App() {
   const [count, setCount] = useState(0);
   const [showSideBar, setShowSideBar] = useState(true);
 
+  const toggleSidebar = () =>{
+    setShowSideBar(prev=>!prev)
+  }
+
   return (
     <>
       <PageContextProvider>
         <Header />
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", height:"100vh" }}>
           {showSideBar && <Sidebar setShowSideBar={setShowSideBar}/>}
-          {!showSideBar && <div className="sidebar-opener"><TbMinusVertical/></div>}
+          <div className="sidebar-opener"><TbMinusVertical onClick={()=>{toggleSidebar()}}/></div>
           <Page />
         </div>
       </PageContextProvider>

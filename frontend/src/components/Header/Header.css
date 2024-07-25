@@ -6,7 +6,7 @@
 .header{
     background-color: black;
     color: azure;
-    height: 2rem;
+    height: 2.75rem;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -17,6 +17,11 @@
 .nav-components ul{
     list-style: none;
     display: flex;
-    gap: 1rem;
-    font-size: x-small;
+    gap: 4rem;
+    font-size: medium;
+    cursor: pointer;
+}
+
+.nav-components li:hover{
+    font-family: 'Virgil', sans-serif;
 }

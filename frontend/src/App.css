@@ -1,10 +1,22 @@
+html{
+    overflow: hidden;
+}
+
+
 .sidebar-opener{
-    width: 1%;
-    height: 100%;
-    position: absolute;
+    /* width: 1%; */
+    /* height: 100%; */
+    position: relative
 }
 
 .sidebar-opener svg{
     height: 100%;
     width: 2rem;
+    position: relative;
+    color: gray;
+}
+
+.sidebar-opener svg:hover{
+    color: black;
+    transform: translateX(5%);
 }

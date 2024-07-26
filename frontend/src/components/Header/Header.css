@@ -17,7 +17,7 @@
 .nav-components ul{
     list-style: none;
     display: flex;
-    gap: 4rem;
+    gap: 4vh;
     font-size: medium;
     cursor: pointer;
 }

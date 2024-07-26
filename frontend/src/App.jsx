@@ -19,7 +19,7 @@ function App() {
       <PageContextProvider>
         <Header />
         <div style={{ display: "flex", height:"100vh" }}>
-          {showSideBar && <Sidebar setShowSideBar={setShowSideBar}/>}
+          {showSideBar && <Sidebar setShowSideBar={{showSideBar,setShowSideBar}}/>}
           <div className="sidebar-opener"><TbMinusVertical onClick={()=>{toggleSidebar()}}/></div>
           <Page />
         </div>

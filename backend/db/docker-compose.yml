@@ -1,0 +1,22 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432  # make sure you don't have another container running on 5432
+
+    environment:
+      - POSTGRES_DB=usersDB
+      - POSTGRES_USER=Shreevathsa
+      - POSTGRES_PASSWORD=9353152800@Chiu
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+# postgresql://Shreevathsa:9353152800@localhost:5432/usersDB

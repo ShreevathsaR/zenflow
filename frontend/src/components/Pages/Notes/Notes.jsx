@@ -6,6 +6,7 @@ import "./Notes.css";
 import Swal from "sweetalert2";
 import { MdDelete } from "react-icons/md";
 import { BsFillPinAngleFill } from "react-icons/bs";
+import axios from "axios";
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
@@ -18,7 +19,8 @@ const Notes = () => {
   const [optionsModal, setOptionsModal] = useState(false);
   const [selectedNoteIndex, setSelectedNoteIndex] = useState(null);
   const [showHoverOptions, setShowHoverOptions] = useState(true);
-  const [pinnedNotes,setPinnedNotes] = useState([]);
+  const [pinnedNotes, setPinnedNotes] = useState([]);
+  const [recievedNotes, setRecievedNotes] = useState([]);
 
   useEffect(() => {
     const storedNotes = localStorage.getItem("Notes");
@@ -47,6 +49,16 @@ const Notes = () => {
       setTitle("");
       setDesc("");
       localStorage.setItem("Notes", JSON.stringify(updatedNotes));
+
+
+      const id=2
+      axios.post(`http://localhost:8000/notes/create/${id}`,{title ,desc})
+      .then(()=>{
+        console.log("success")
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
     }
     setModal(false);
   };
@@ -113,74 +125,84 @@ const Notes = () => {
   };
 
   const pinThisNote = (index) => {
-    console.log({index});
+    console.log({ index });
 
-    if(index > -1){
+    if (index > -1) {
       const arrayForPinning = [...notes];
-      arrayForPinning.splice(index,1)
+      arrayForPinning.splice(index, 1);
 
-      arrayForPinning.unshift(notes[index])
+      arrayForPinning.unshift(notes[index]);
 
-      setNotes(arrayForPinning)
+      setNotes(arrayForPinning);
 
       localStorage.setItem("Notes", JSON.stringify(arrayForPinning));
     }
   };
 
   const deleteNoteHome = (index) => {
-        console.log("Deleted elements", notes[index]);
-        
-        Swal.fire({
-          title: "Are you sure?",
-          text: "You won't be able to revert this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Yes, delete it!",
-          cancelButtonText: "No, cancel!",
-          reverseButtons: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
+    console.log("Deleted elements", notes[index]);
 
-            const notesArrayForMod = [...notes]
-            notesArrayForMod.splice(index, 1);
-            setNotes(notesArrayForMod)
-    
-            let fetchedLocalNotes = localStorage.getItem("Notes");
-    
-            const fetchedNotesParsed = JSON.parse(fetchedLocalNotes);
-    
-            if (
-              fetchedNotesParsed &&
-              fetchedNotesParsed.length > index
-            ) {
-              fetchedNotesParsed.splice(index, 1);
-            }
-    
-            const updatedStoredNotes = JSON.stringify(fetchedNotesParsed);
-    
-            localStorage.setItem("Notes", updatedStoredNotes);
-            setOptionsModal(false);
-            setShowNoteModal(false);
-    
-            Swal.fire({
-              title: "Deleted!",
-              text: "Your file has been deleted.",
-              icon: "success",
-            });
-            setOptionsModal(false);
-          } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-          ) {
-            Swal.fire({
-              title: "Cancelled",
-              text: "Your imaginary file is safe :)",
-              icon: "error",
-            });
-          }
-          setOptionsModal(false);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const notesArrayForMod = [...notes];
+        notesArrayForMod.splice(index, 1);
+        setNotes(notesArrayForMod);
+
+        let fetchedLocalNotes = localStorage.getItem("Notes");
+
+        const fetchedNotesParsed = JSON.parse(fetchedLocalNotes);
+
+        if (fetchedNotesParsed && fetchedNotesParsed.length > index) {
+          fetchedNotesParsed.splice(index, 1);
+        }
+
+        const updatedStoredNotes = JSON.stringify(fetchedNotesParsed);
+
+        localStorage.setItem("Notes", updatedStoredNotes);
+        setOptionsModal(false);
+        setShowNoteModal(false);
+
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
         });
+        setOptionsModal(false);
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        Swal.fire({
+          title: "Cancelled",
+          text: "Your imaginary file is safe :)",
+          icon: "error",
+        });
+      }
+      setOptionsModal(false);
+    });
   };
+
+
+  useEffect(() => {
+    const id = 2;
+    axios
+      .get(`http://localhost:8000/notes/${id}`)
+      .then((res) => {
+        setRecievedNotes(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
 
   return (
     <div className="notes-page">
@@ -285,6 +307,18 @@ const Notes = () => {
             </div>
           </div>
         )}
+        <div>
+          <ul>
+            {recievedNotes.map((note, index) => {
+              return (
+                <li key={index}>
+                  <h4>{note.notes_title}</h4>
+                  <p>{note.notes_desc}</p>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </div>
   );

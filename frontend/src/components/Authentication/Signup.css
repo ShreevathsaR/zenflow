@@ -1,0 +1,109 @@
+/* General Reset for body and html to avoid affecting other pages */
+body, html {
+    margin: 0;
+    padding: 0;
+    /* font-family: 'Arial', sans-serif; */
+    height: 100%;
+  }
+  
+  /* Signup page container to center the content */
+  .signup-page {
+    background: radial-gradient(circle 1100px at 82% 109.2%, rgba(73, 76, 212, 1) 0.1%, rgba(3, 1, 50, 1) 100.2%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Centering the card within the container */
+  .signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* Styling the card */
+  .signup-card {
+    background: rgba(3, 1, 50, 0.8);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  /* Title styling */
+  .signup-title {
+    font-size: 2rem;
+    color: rgba(73, 76, 212, 1);
+    margin-bottom: 1rem;
+  }
+  
+  /* Form styling */
+  .signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0 auto;
+    max-width: 300px; /* Adjust width as needed */
+  }
+  
+  /* Styling input fields and labels */
+  .input-group {
+    text-align: left;
+  }
+  
+  .input-group label {
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 5px;
+    border: 1px solid rgba(73, 76, 212, 1);
+    outline: none;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+  
+  /* Button styling */
+  .signup-btn {
+    background-color: rgba(73, 76, 212, 1);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    align-self: center; /* Center the button horizontally */
+  }
+  
+  .signup-btn:hover {
+    background-color: white;
+    color: rgba(73, 76, 212, 1);
+  }
+  
+  /* Login link styling */
+  .login-link {
+    margin-top: 1rem;
+    color: white;
+    font-size: 0.9rem;
+  }
+  
+  .login-link a {
+    color: rgba(73, 76, 212, 1);
+    text-decoration: none;
+  }
+  
+  .login-link a:hover {
+    text-decoration: underline;
+  }
+  

@@ -1,0 +1,100 @@
+/* Login.css */
+
+.login-page {
+    background: radial-gradient(circle 1100px at 82% 109.2%, rgba(73, 76, 212, 1) 0.1%, rgba(3, 1, 50, 1) 100.2%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .login-card {
+    background: rgba(3, 1, 50, 0.8);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  /* Title styling */
+  .login-card h2 {
+    font-size: 2rem;
+    color: rgba(73, 76, 212, 1);
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Form styling */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  /* Styling input fields */
+  .input-group {
+    text-align: left;
+    width: 100%;
+  }
+  
+  .input-group label {
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .input-group input {
+    width: 94%;
+    padding: 0.75rem;
+    border-radius: 5px;
+    border: 1px solid rgba(73, 76, 212, 1);
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    box-sizing: border-box;
+  }
+  
+  /* Button styling */
+  .login-btn {
+    background-color: rgba(73, 76, 212, 1);
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    align-self: center; /* Center the button horizontally */
+  }
+  
+  .login-btn:hover {
+    background-color: white;
+    color: rgba(73, 76, 212, 1);
+  }
+  
+  /* Link styling */
+  .login-link {
+    margin-top: 1rem;
+    color: white;
+    font-size: 0.9rem;
+  }
+  
+  .login-link a {
+    color: rgba(73, 76, 212, 1);
+    text-decoration: none;
+  }
+  
+  .login-link a:hover {
+    text-decoration: underline;
+  }
+  

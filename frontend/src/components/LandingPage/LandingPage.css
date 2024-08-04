@@ -1,0 +1,224 @@
+.landing-page {
+  height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  font-family: 'Arial', sans-serif;
+  background-image: radial-gradient(circle 1100px at 82% 109.2%, rgba(73, 76, 212, 1) 0.1%, rgba(3, 1, 50, 1) 100.2%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.navbar {
+  width: 100%;
+  background-color: rgba(3, 1, 50, 0.8);
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+}
+
+.navbar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding-left: 1vw;
+}
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+  color: rgba(73, 76, 212, 1);
+}
+
+.nav-auth-buttons {
+  display: flex;
+  gap: 10px;
+  padding-right: 2vw;
+}
+
+.nav-button {
+  background-color: rgba(73, 76, 212, 1);
+  color: white;
+  border: 2px solid rgba(73, 76, 212, 1);
+  border-radius: 5px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.nav-button:hover {
+  background-color: white;
+  color: rgba(73, 76, 212, 1);
+}
+
+.hero-section {
+  text-align: center;
+  margin-top: 100px;
+  padding: 2rem;
+  animation: fadeIn 2s ease-in-out;
+}
+
+.title {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  color: rgb(216, 216, 236);
+  text-shadow: 0 0 10px rgba(73, 76, 212, 0.8);
+  animation: float 3s ease-in-out infinite;
+}
+
+.tagline {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.get-started-btn {
+  background-color: rgba(73, 76, 212, 1);
+  color: white;
+  border: 2px solid rgba(73, 76, 212, 1);
+  border-radius: 5px;
+  padding: 0.75rem 2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  
+}
+
+.get-started-btn:hover {
+  background-color: white;
+  color: rgba(73, 76, 212, 1);
+  
+}
+
+.features {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 30px;
+  padding: 2rem;
+}
+
+.feature-card {
+  background: rgba(3, 1, 50, 0.8);
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+  width: 300px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+.feature-card h3{
+  /* font-family: 'Virgil', sans-serif; */
+  font-size: x-large;
+  padding-bottom: 1rem;
+}
+
+.feature-image {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 1rem;
+  animation: fadeIn 2s ease-in-out;
+  width: 10rem;
+}
+
+.how-it-works, .our-vision, .testimonials {
+  background: rgba(3, 1, 50, 0.7);
+  padding: 2rem;
+  border-radius: 10px;
+  margin: 2rem;
+  text-align: center;
+}
+
+.how-it-works-content, .vision-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.step, .vision-step {
+  background: rgba(3, 1, 50, 0.8);
+  border-radius: 10px;
+  padding: 1rem;
+  max-width: 300px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.step:hover, .vision-step:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+.step-image, .vision-image {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 1rem;
+  animation: fadeIn 2s ease-in-out;
+}
+
+.testimonial-card {
+  background: rgba(3, 1, 50, 0.8);
+  border-radius: 10px;
+  padding: 1rem;
+  max-width: 400px;
+  margin: 1rem auto;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.testimonial-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+.footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.footer p {
+  margin: 0;
+  padding: 0.5rem;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes float {
+  0% { transform: translateY(-2px); }
+  50% { transform: translateY(2px); }
+  100% { transform: translateY(-2px); }
+}

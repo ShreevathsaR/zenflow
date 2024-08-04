@@ -4,7 +4,7 @@
     font-family: "Poppins", sans-serif;
 }
 .header{
-    background-color: black;
+    background-color: rgb(2, 0, 72);
     color: azure;
     height: 2.75rem;
     display: flex;
@@ -23,5 +23,6 @@
 }
 
 .nav-components li:hover{
-    font-family: 'Virgil', sans-serif;
+    /* font-family: 'Virgil', sans-serif; */
+    color: rgb(86, 88, 211);
 }

@@ -4,7 +4,7 @@ import './Header.css'
 const Header = () => {
   return (
     <div className='header'>
-        <h2 className='title'>ZenFlow</h2>
+        <h2 className='home-title'>ZenFlow</h2>
         <div className='nav-components'>
             <ul>
                 <li>Home</li>

@@ -19,7 +19,7 @@
   list-style: none;
 }
 .add-note {
-  background-color: white;
+  background-color: rgb(39, 103, 187);
   width: 12rem;
   height: 14rem;
   display: flex;
@@ -31,7 +31,7 @@
   box-shadow: 1px 1px 5px gray;
   font-size: small;
   font-weight: 600;
-  color: grey;
+  color: rgb(187, 204, 231);
   gap: 0.5rem;
   font-family: "Virgil", sans-serif;
 }

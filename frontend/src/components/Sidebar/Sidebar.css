@@ -1,5 +1,5 @@
 .sidebar {
-  background-color: rgb(9, 9, 140);
+  background-color: rgb(6, 6, 117);
   width: 20%;
   border: none;
   border-top-right-radius: 5px;
@@ -7,6 +7,8 @@
   height: 100vh;
   box-shadow: 1px 1px 5px gray;
   transition: transform 0.3s ease;
+  padding: 0.7rem;
+
 }
 
 /* .sidebar.closed {
@@ -25,11 +27,11 @@
 .sidebar li {
   padding-left: 0.5rem;
   height: 3rem;
-  border-bottom: 2px solid black;
-  border-bottom-style: groove;
+  /* border-bottom: 2px solid black;
+  border-bottom-style: groove; */
   align-items: center;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding-right: 0.5rem;
   color: white;
   opacity: 1;
@@ -37,8 +39,13 @@
 
 .sidebar li:hover {
   /* font-family: "Virgil", sans-serif; */
-  background-color: rgb(58, 39, 233);
+  background-color: rgb(74, 58, 212);
+  border-radius: 5px;
+  cursor: pointer;
+  transform: translate(1%, 0.75%);
+  /* box-shadow: 2px 2px 7px rgb(148, 173, 239); */
 }
+
 
 .closing-bar {
   /* background-color: grey; */
@@ -58,6 +65,47 @@
   color: #dedede;
   transform: translate(5%, 4%);
 }
+
+
+.profile-section{
+  display: flex;
+  height: 2.5%;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+}
+
+.profile-section > svg{
+  color: white;
+  width: 28px;
+  height: 28px;
+}
+
+.notifications{
+  display: flex;
+}
+
+.notifications > svg{
+  color: white;
+  width: 20px;
+  height: 20px;
+}
+
+.notifications > svg:hover{
+  color: #dedede;
+  transform: translate(5%, 4%);
+}
+
+.profile-section > svg:hover{
+  color: #dedede;
+  transform: translate(5%, 4%);
+}
+
+.sidebar-username{
+  padding-left: 0.5vw;
+  color: white;
+}
+
 
 @media only screen and (max-width: 768px) {
   .sidebar {

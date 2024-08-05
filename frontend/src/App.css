@@ -6,17 +6,18 @@ html{
 .sidebar-opener{
     /* width: 1%; */
     /* height: 100%; */
-    position: relative
+    position: relative;
+    background-color: rgb(74, 58, 212);
 }
 
 .sidebar-opener svg{
     height: 100%;
-    width: 2rem;
+    width: 1rem;
     position: relative;
-    color: gray;
+    color: rgb(255, 255, 255);
 }
 
 .sidebar-opener svg:hover{
-    color: black;
+    color: rgb(217, 224, 230);
     transform: translateX(5%);
 }

@@ -8,8 +8,12 @@ import { MdViewKanban } from "react-icons/md";
 import { BiChalkboard } from "react-icons/bi";
 import { RiTodoFill } from "react-icons/ri";
 import { RiTeamFill } from "react-icons/ri";
+import { supabase } from "../../supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ showSideBar, setShowSideBar }) => {
+
+  const navigate = useNavigate();
   console.log(setShowSideBar);
 
   const { page, setPage } = usePageContext();
@@ -22,10 +26,21 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     setPage("Todo");
   };
 
+  const handleLogout = async() => {
+    const {error} = await supabase.auth.signOut();
+    // window.location.reload();
+
+    if(error){
+      console.log(error.message)
+    } else {
+      navigate('/')
+    }
+  };
+
   return (
     <div className={`sidebar ${showSideBar ? "" : "closed"}`}>
       <div className="profile-section">
-        <FaUserCircle />
+        <FaUserCircle onClick={()=>{handleLogout()}} />
         <div className="sidebar-username">Shreevathsa</div>
         <div className="notifications">
           <IoNotifications />

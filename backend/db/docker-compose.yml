@@ -20,3 +20,4 @@ services:
       - 8080:8080
 
 # postgresql://Shreevathsa:9353152800@localhost:5432/usersDB
+# postgresql://postgres.wwpvfhirmuktiuhvqjel:9353152800@Chiu@aws-0-ap-south-1.pooler.supabase.com:6543/postgres

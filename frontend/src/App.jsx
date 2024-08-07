@@ -1,19 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./components/Header/Header";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Page from "./components/Pages/Page";
 import { PageContextProvider } from "./components/Contexts/PageContext";
 import { TbMinusVertical } from "react-icons/tb";
 import './App.css';
-import App1 from "./App1";
 
 function App() {
-  const [count, setCount] = useState(0);
   const [showSideBar, setShowSideBar] = useState(true);
 
   const toggleSidebar = () =>{
     setShowSideBar(prev => !prev);
   }
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      // Check if Ctrl (or Cmd on Mac) is pressed along with the 'S' key
+      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault(); // Prevent the default browser save action
+        toggleSidebar();
+      }
+    };
+
+    // Add the event listener when the component mounts
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
 
   return (
       <PageContextProvider>

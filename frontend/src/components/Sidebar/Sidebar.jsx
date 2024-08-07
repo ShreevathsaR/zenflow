@@ -50,7 +50,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
         <ul>
           <li><MdDashboard style={{paddingRight:"0.4rem"}}/>Home</li>
           <li onClick={()=>{handleNotes()}}><MdViewKanban style={{paddingRight:"0.4rem"}}/>Kanban</li>
-          <li><RiTodoFill style={{paddingRight:"0.4rem"}}/>Todo</li>
+          <li onClick={()=>{handleTodo()}}><RiTodoFill style={{paddingRight:"0.4rem"}}/>Todo</li>
           <li><BiChalkboard style={{paddingRight:"0.4rem"}}/>Whiteboard</li>
           <li><RiTeamFill style={{paddingRight:"0.4rem"}}/>Organizations</li>
         </ul>

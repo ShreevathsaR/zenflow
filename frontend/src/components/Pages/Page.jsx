@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import './Page.css'
-import Notes from './Notes/Notes'
 import Todo from './Todo/Todo'
 import { usePageContext } from '../Contexts/PageContext'
+import Kanban from './Notes/Kanban'
 
 const Page = () => {
 
@@ -10,8 +10,8 @@ const Page = () => {
 
   return (
     <div className='page'>
-        {page === "" && <div style={{color:"gray", fontSize:"x-large", display:"flex", width:"100%", height:"100%", alignItems:"center", justifyContent:"center"}}>Select a tool</div>}
-        {page === "Notes" && <Notes/>}
+        {page === "" && <div style={{color:"white", fontSize:"x-large", display:"flex", width:"100%", height:"100%", alignItems:"center", justifyContent:"center"}}>Select a tool</div>}
+        {page === "Notes" && <Kanban/>}
         {page === "Todo" && <Todo/>}
     </div>
   )

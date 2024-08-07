@@ -1,5 +1,5 @@
 .sidebar {
-  background-color: rgb(6, 6, 117);
+  background-color: #145DA0;
   width: 17%;
   border: none;
   /* border-top-right-radius: 5px; */
@@ -39,7 +39,7 @@
 
 .sidebar li:hover {
   /* font-family: "Virgil", sans-serif; */
-  background-color: rgb(74, 58, 212);
+  background-color: #4ba3c0;
   border-radius: 5px;
   cursor: pointer;
   transform: translate(1%, 0.75%);

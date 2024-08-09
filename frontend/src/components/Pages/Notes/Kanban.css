@@ -7,7 +7,7 @@
     background-color: #8db9ce;
     /* border-radius: 10px; */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .kanban-container .kanban-header {
@@ -35,6 +35,7 @@
     height: 100%;
     border-radius: 0 0 10px 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-x: scroll;
 }
 
 .kanban-board .kanban-sections {
@@ -48,16 +49,15 @@
 }
 
 .kanban-board li {
-    width: 15%;
-    min-height: 20%;
+    width: 272px;
     border-radius: 7px 7px 7px 7px;
     display: flex;
     gap: 1rem;
     flex-direction: column;
 }
 
-.kanban-cards {
-    height: 37rem;
+.kanban-card {
+    /* height: 37rem; */
     gap: 0.5rem;
     display: flex;
     box-sizing: border-box;
@@ -67,14 +67,56 @@
     padding: 0.5rem;
 }
 
-.kanban-cards li{
+.kanban-card .todo{
     width: 100%;
     background-color: #01121a;
     color: white;
     box-sizing: border-box;
     padding: 0.8rem;
+    cursor: move;
+}
+
+.todo:hover{
+    border: 1px solid #f5f5f5;
+    cursor:move;
 }
 
 .individual-sections {
     background-color: #8db9ce;
+}
+
+.section-addition{
+    background-color: #0C2D48;
+    width: 272px;
+    height: 3rem;
+    color: white;
+    box-sizing: border-box;
+    border-radius: 10px 10px 10px 10px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding-right: 1rem;
+}
+
+.section-addition:hover{
+    border: 2px solid #f5f5f5;
+    transform: translate(-0.5%,0.5%);
+}
+
+.kanban-card h3{
+    color: white;
+}
+
+.add-task{
+    text-align: center;
+    color: white;
+    padding: 0.5rem;
+
+}
+
+.add-task:hover{
+    /* border: 1px solid #f5f5f5; */
+    transform: translate(-0.5%,0.5%);
+    background-color: #0c4b68;
+    border-radius: 5px;
 }

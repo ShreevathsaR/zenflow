@@ -2,11 +2,11 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 const pool = new Pool({
-    user: 'Shreevathsa',
-    password: "9353152800@Chiu",
+    user: process.env.DB_USERNAME,
     host: process.env.HOST,
+    database: process.env.DBNAME,
+    password: process.env.PASSWORD,
     port: process.env.DBPORT,
-    database: 'zenflow',
 });
 
 (async () => {

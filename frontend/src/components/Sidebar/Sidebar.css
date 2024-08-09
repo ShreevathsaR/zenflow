@@ -19,11 +19,13 @@
   font-size: medium;
   background-color: gray;
 }
+
 .sidebar ul {
   list-style: none;
   font-size: medium;
   font-weight: 500;
 }
+
 .sidebar li {
   padding-left: 0.5rem;
   height: 3rem;
@@ -67,7 +69,7 @@
 }
 
 
-.profile-section{
+.profile-section {
   display: flex;
   height: 2.5%;
   align-items: center;
@@ -75,37 +77,157 @@
   padding-bottom: 1rem;
 }
 
-.profile-section > svg{
+.profile-section>svg {
   color: white;
   width: 28px;
   height: 28px;
 }
 
-.notifications{
+.notifications {
   display: flex;
 }
 
-.notifications > svg{
+.notifications>svg {
   color: white;
   width: 20px;
   height: 20px;
 }
 
-.notifications > svg:hover{
+.notifications>svg:hover {
   color: #dedede;
   transform: translate(5%, 4%);
 }
 
-.profile-section > svg:hover{
+.profile-section>svg:hover {
   color: #dedede;
   transform: translate(5%, 4%);
 }
 
-.sidebar-username{
+.sidebar-username {
   padding-left: 0.5vw;
   color: white;
 }
 
+.sidebar-options .projects-section,.organizations-section {
+  background-color: #0C2D48;
+  padding: 0%;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  border-radius: 5px;
+}
+
+.projects-section .add-project svg:hover{
+  color: #dedede;
+  transform: translate(1.5%, 0.75%);
+}
+
+.organizations-section .add-organization svg:hover{
+  color: #dedede;
+  transform: translate(1.5%, 0.75%);
+}
+
+.sidebar-options .projects-section:hover {
+  transform: translate(0px, 0px);
+  background-color: #0C2D48;
+}
+
+.sidebar-options .organizations-section:hover {
+  transform: translate(0px, 0px);
+  background-color: #0C2D48;
+}
+
+.organization-list{
+  padding-left: 1rem;
+}
+
+.sidebar-options .organizations-section{
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Background overlay with blur effect */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px); /* Background blur */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal content box */
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+}
+
+/* Modal header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Close button */
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Form group */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* Input field */
+.input-field {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+/* Modal footer with buttons */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Cancel button */
+.cancel-button {
+  background-color: #ccc;
+  color: black;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+/* Submit button */
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
 @media only screen and (max-width: 768px) {
   .sidebar {

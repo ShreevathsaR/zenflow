@@ -32,6 +32,20 @@ app.use(express.json());
 
 
 
+app.get('/organizations', async (req,res)=>{
+
+    const {id} = req.query;
+
+    try{
+        const organizations = await pool.query('SELECT * FROM organizations WHERE owner_id = $1',[id])
+
+        res.send(organizations.rows);
+    }catch(error){
+        console.log(error)
+    }
+})
+
+
 const PORT = 8000
 
 app.listen(PORT, () => {

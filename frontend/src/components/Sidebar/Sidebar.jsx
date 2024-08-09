@@ -14,13 +14,13 @@ import { RiTeamFill } from "react-icons/ri";
 import { IoMdAdd } from "react-icons/io";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Sidebar = ({ showSideBar, setShowSideBar }) => {
-
   const navigate = useNavigate();
   // console.log(setShowSideBar);
 
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
 
   const [projects, setProjects] = useState([]);
   const [showProjects, setShowProjects] = useState(false);
@@ -30,38 +30,50 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
   const [showAddOrgModal, setShowAddOrgModal] = useState(false);
 
-  const [organizationName, setOrganizationName] = useState('');
+  const [organizationName, setOrganizationName] = useState("");
 
   useEffect(() => {
-
     setProjects(["Project 1", "Project 2"]);
-    setOrganizations(["Organization 1", "Organization 2"]);
+    
 
+    const id = 'd40567a0-2861-4c1a-9719-09e854fb0630'
 
     const fetchUsername = async () => {
-
       const { data, error } = await supabase.auth.getSession();
 
-      // console.log(data.session.user.id);
-
-
       if (data) {
-        const currentUserId = data.session.user.id
+        const currentUserId = data.session.user.id;
 
-        const username = await supabase.from('profiles').select('full_name').eq('id', currentUserId);
-        // console.log(username.data[0].full_name);
+        const username = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", currentUserId);
 
         setUsername(username.data[0].full_name);
-
       } else {
-        console.log('User is not logged in');
-        setUsername('User')
+        console.log("User is not logged in");
+        setUsername("User");
       }
+    };
 
-    }
+    const fetchOrganizations = async () => {
+      
+
+      const response = await axios.get('http://localhost:8000/organizations',{
+        params : {id:id}
+      })
+      console.log(response.data)
+      const organizationsData = response.data;
+      const fetchedOrganizations = organizationsData.map((organization) => {
+        return organization.name
+      })
+
+      setOrganizations(fetchedOrganizations);
+    };
 
     fetchUsername();
-  }, [])
+    fetchOrganizations();
+  }, []);
 
   const { page, setPage } = usePageContext();
 
@@ -78,32 +90,36 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     // window.location.reload();
 
     if (error) {
-      console.log(error.message)
+      console.log(error.message);
     } else {
-      navigate('/')
+      navigate("/");
     }
   };
 
   const toggleProjects = () => {
-    setShowProjects(prev => !prev);
+    setShowProjects((prev) => !prev);
   };
 
   const toggleOrganizations = () => {
-    setShowOrganizations(prev => !prev);
+    setShowOrganizations((prev) => !prev);
   };
 
   const addOrganization = () => {
-    setShowAddOrgModal(prev => !prev);
-  }
+    setShowAddOrgModal((prev) => !prev);
+  };
 
   const createOrganization = () => {
     console.log(organizationName);
-  }
+  };
 
   return (
     <div className={`sidebar ${showSideBar ? "" : "closed"}`}>
       <div className="profile-section">
-        <FaUserCircle onClick={() => { handleLogout() }} />
+        <FaUserCircle
+          onClick={() => {
+            handleLogout();
+          }}
+        />
         <div className="sidebar-username">{username}</div>
         <div className="notifications">
           <IoNotifications />
@@ -111,23 +127,59 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       </div>
       <div className="sidebar-options">
         <ul>
-          <li><MdDashboard style={{ paddingRight: "0.4rem" }} />Home</li>
-          <li onClick={() => { handleNotes() }}><MdViewKanban style={{ paddingRight: "0.4rem" }} />Kanban</li>
-          <li onClick={() => { handleTodo() }}><RiTodoFill style={{ paddingRight: "0.4rem" }} />Todo</li>
-          <li><BiChalkboard style={{ paddingRight: "0.4rem" }} />Whiteboard</li>
-          <li className="organizations-section" onClick={() => { toggleOrganizations() }}>
+          <li>
+            <MdDashboard style={{ paddingRight: "0.4rem" }} />
+            Home
+          </li>
+          <li
+            onClick={() => {
+              handleNotes();
+            }}
+          >
+            <MdViewKanban style={{ paddingRight: "0.4rem" }} />
+            Kanban
+          </li>
+          <li
+            onClick={() => {
+              handleTodo();
+            }}
+          >
+            <RiTodoFill style={{ paddingRight: "0.4rem" }} />
+            Todo
+          </li>
+          <li>
+            <BiChalkboard style={{ paddingRight: "0.4rem" }} />
+            Whiteboard
+          </li>
+          <li
+            className="organizations-section"
+            onClick={() => {
+              toggleOrganizations();
+            }}
+          >
             <div>
               <RiTeamFill style={{ paddingRight: "0.4rem" }} />
               Organizations
             </div>
-            <div className="add-organization" style={{ display: "flex", alignItems: "center" }}>
-              <IoMdAdd className="add-organization-btn" style={{ width: "24px", height: "24px", paddingRight: "0.5rem" }} onClick={() => { addOrganization() }} />
+            <div
+              className="add-organization"
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <IoMdAdd
+                className="add-organization-btn"
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  paddingRight: "0.5rem",
+                }}
+                onClick={() => {
+                  addOrganization();
+                }}
+              />
               {!showOrganizations && (
                 <FaChevronDown style={{ justifySelf: "center" }} />
               )}
-              {showOrganizations && (
-                <FaChevronUp />
-              )}
+              {showOrganizations && <FaChevronUp />}
             </div>
           </li>
           {showOrganizations && (
@@ -147,9 +199,20 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               <div className="modal-content">
                 <div className="modal-header">
                   <h2>Add an Organization</h2>
-                  <button onClick={() => { setShowAddOrgModal(false) }} className="close-button">&times;</button>
+                  <button
+                    onClick={() => {
+                      setShowAddOrgModal(false);
+                    }}
+                    className="close-button"
+                  >
+                    &times;
+                  </button>
                 </div>
-                <form onSubmit={()=>{createOrganization()}}>
+                <form
+                  onSubmit={() => {
+                    createOrganization();
+                  }}
+                >
                   <div className="form-group">
                     <label htmlFor="title">Organization Name</label>
                     <input
@@ -157,13 +220,23 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                       id="title"
                       className="input-field"
                       placeholder="Enter title"
-                      onChange={e => setOrganizationName(e.target.value)}
+                      onChange={(e) => setOrganizationName(e.target.value)}
                       required
                     />
                   </div>
                   <div className="modal-footer">
-                    <button type="button" onClick={() => { setShowAddOrgModal(false) }} className="cancel-button">Cancel</button>
-                    <button type="submit" className="submit-button">Submit</button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAddOrgModal(false);
+                      }}
+                      className="cancel-button"
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="submit-button">
+                      Submit
+                    </button>
                   </div>
                 </form>
               </div>
@@ -172,27 +245,42 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
           <br style={{ backgroundColor: "gray" }} />
 
-
-          <li className="projects-section"
-            onClick={() => { toggleProjects() }} style={{ justifyContent: "space-between", backgroundColor: "#0C2D48" }}>
+          <li
+            className="projects-section"
+            onClick={() => {
+              toggleProjects();
+            }}
+            style={{
+              justifyContent: "space-between",
+              backgroundColor: "#0C2D48",
+            }}
+          >
             <div>
               <GoProjectRoadmap style={{ paddingRight: "0.4rem" }} />
               Projects
             </div>
-            <div className="add-project" style={{ display: "flex", alignItems: "center" }}>
-              <IoMdAdd className="add-project-btn" style={{ width: "24px", height: "24px", paddingRight: "0.5rem" }} />
+            <div
+              className="add-project"
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <IoMdAdd
+                className="add-project-btn"
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  paddingRight: "0.5rem",
+                }}
+              />
               {!showProjects && (
                 <FaChevronDown style={{ justifySelf: "center" }} />
               )}
-              {showProjects && (
-                <FaChevronUp />
-              )}
+              {showProjects && <FaChevronUp />}
             </div>
           </li>
           {showProjects && (
             <ul style={{ paddingLeft: "1rem" }}>
               {projects.map((project, index) => {
-                return <li key={index}>{project}</li>
+                return <li key={index}>{project}</li>;
               })}
             </ul>
           )}

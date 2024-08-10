@@ -45,6 +45,28 @@ app.get('/organizations', async (req,res)=>{
     }
 })
 
+app.post('/organizations/create', async(req,res)=>{
+    const {name,owner_id} = req.body;
+    try{
+        await pool.query('INSERT INTO organizations (name, owner_id) VALUES ($1, $2)',[name,owner_id])
+        res.send("Organization created")
+    }
+    catch(error){
+        console.log(error)
+    }
+})
+
+app.get('/projects/:org_id', async (req,res)=>{
+    const org_id = req.params.org_id;
+    try{
+        const projects = await pool.query('SELECT * FROM projects WHERE organization_id = $1',[org_id]);
+        res.send(projects);
+    }
+    catch(error){
+        console.log(error)
+    }
+})
+
 
 const PORT = 8000
 

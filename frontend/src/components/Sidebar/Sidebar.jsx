@@ -23,26 +23,24 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const [username, setUsername] = useState("");
 
   const [projects, setProjects] = useState([]);
-  const [showProjects, setShowProjects] = useState(false);
+  const [showProjects, setShowProjects] = useState(true);
 
   const [organizations, setOrganizations] = useState([]);
-  const [showOrganizations, setShowOrganizations] = useState(false);
+  const [showOrganizations, setShowOrganizations] = useState(true);
 
   const [showAddOrgModal, setShowAddOrgModal] = useState(false);
 
   const [organizationName, setOrganizationName] = useState("");
 
   useEffect(() => {
-    setProjects(["Project 1", "Project 2"]);
-    
 
-    const id = 'd40567a0-2861-4c1a-9719-09e854fb0630'
 
     const fetchUsername = async () => {
       const { data, error } = await supabase.auth.getSession();
 
       if (data) {
         const currentUserId = data.session.user.id;
+        localStorage.setItem("currentUserId", currentUserId);
 
         const username = await supabase
           .from("profiles")
@@ -56,24 +54,43 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       }
     };
 
-    const fetchOrganizations = async () => {
-      
-
-      const response = await axios.get('http://localhost:8000/organizations',{
-        params : {id:id}
-      })
-      console.log(response.data)
-      const organizationsData = response.data;
-      const fetchedOrganizations = organizationsData.map((organization) => {
-        return organization.name
-      })
-
-      setOrganizations(fetchedOrganizations);
-    };
-
     fetchUsername();
     fetchOrganizations();
+    fetchProjects();
   }, []);
+
+
+  const fetchOrganizations = async () => {
+
+    const id = localStorage.getItem("currentUserId");
+
+    const response = await axios.get('http://localhost:8000/organizations', {
+      params: { id: id }
+    })
+    console.log(response.data)
+    const organizationsData = response.data;
+    const fetchedOrganizations = organizationsData.map((organization) => {
+      return organization.name
+    })
+
+    setOrganizations(fetchedOrganizations);
+  };
+
+  const fetchProjects = async () => {
+    const org_id = 8;
+    const response = await axios.get(`http://localhost:8000/projects/${org_id}`)
+    .catch((error) => {
+      console.log(error);
+    })
+
+    const fetchedOrganizationsData = response.data.rows;
+    const fetchedOrganizations = fetchedOrganizationsData.map((organization) => {
+      return organization.name
+    })
+    // console.log(fetchedOrganizations)
+    setProjects(fetchedOrganizations);
+  }
+
 
   const { page, setPage } = usePageContext();
 
@@ -88,6 +105,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     // window.location.reload();
+    localStorage.removeItem("currentUserId");
 
     if (error) {
       console.log(error.message);
@@ -108,8 +126,23 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     setShowAddOrgModal((prev) => !prev);
   };
 
-  const createOrganization = () => {
-    console.log(organizationName);
+  const createOrganization = async (e) => {
+    e.preventDefault();
+
+    const id = localStorage.getItem("currentUserId");
+    const name = organizationName;
+    console.log(name, id);
+    setShowAddOrgModal(false);
+    try {
+      await axios.post('http://localhost:8000/organizations/create', { name: name, owner_id: id })
+      console.log(`${name} Organization created!!`);
+    }
+    catch (err) {
+      console.log(err)
+    }
+    finally {
+      fetchOrganizations();
+    }
   };
 
   return (
@@ -153,11 +186,10 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
           </li>
           <li
             className="organizations-section"
-            onClick={() => {
-              toggleOrganizations();
-            }}
           >
-            <div>
+            <div onClick={() => {
+              toggleOrganizations();
+            }}>
               <RiTeamFill style={{ paddingRight: "0.4rem" }} />
               Organizations
             </div>
@@ -177,9 +209,13 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                 }}
               />
               {!showOrganizations && (
-                <FaChevronDown style={{ justifySelf: "center" }} />
+                <FaChevronDown onClick={() => {
+                  toggleOrganizations();
+                }} style={{ justifySelf: "center" }} />
               )}
-              {showOrganizations && <FaChevronUp />}
+              {showOrganizations && <FaChevronUp onClick={() => {
+                toggleOrganizations();
+              }} />}
             </div>
           </li>
           {showOrganizations && (
@@ -208,11 +244,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                     &times;
                   </button>
                 </div>
-                <form
-                  onSubmit={() => {
-                    createOrganization();
-                  }}
-                >
+                <form onSubmit={createOrganization}>
                   <div className="form-group">
                     <label htmlFor="title">Organization Name</label>
                     <input
@@ -247,15 +279,14 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
           <li
             className="projects-section"
-            onClick={() => {
-              toggleProjects();
-            }}
             style={{
               justifyContent: "space-between",
               backgroundColor: "#0C2D48",
             }}
           >
-            <div>
+            <div onClick={() => {
+              toggleProjects();
+            }}>
               <GoProjectRoadmap style={{ paddingRight: "0.4rem" }} />
               Projects
             </div>
@@ -272,9 +303,13 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                 }}
               />
               {!showProjects && (
-                <FaChevronDown style={{ justifySelf: "center" }} />
+                <FaChevronDown style={{ justifySelf: "center" }} onClick={() => {
+                  toggleProjects();
+                }} />
               )}
-              {showProjects && <FaChevronUp />}
+              {showProjects && <FaChevronUp onClick={() => {
+                toggleProjects();
+              }} />}
             </div>
           </li>
           {showProjects && (

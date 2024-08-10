@@ -44,7 +44,7 @@
   background-color: #4ba3c0;
   border-radius: 5px;
   cursor: pointer;
-  transform: translate(1%, 0.75%);
+  transform: translate(0.25%, 0.25%);
   /* box-shadow: 2px 2px 7px rgb(148, 173, 239); */
 }
 
@@ -138,6 +138,10 @@
 
 .organization-list{
   padding-left: 1rem;
+  padding-top: 0.5rem;
+  display: flex;
+  gap: 0.3rem;
+  flex-direction: column;
 }
 
 .sidebar-options .organizations-section{
@@ -227,6 +231,14 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.selected-organization{
+  background-color: #4ba3c0;
+  padding: 0%;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  border-radius: 5px;
 }
 
 @media only screen and (max-width: 768px) {

@@ -67,6 +67,17 @@ app.get('/projects/:org_id', async (req,res)=>{
     }
 })
 
+app.post('/projects/create', async(req,res)=>{
+    const {name,organization_id} = req.body;
+    try{
+        await pool.query('INSERT INTO projects (name, organization_id) VALUES ($1, $2)',[name,organization_id])
+        res.send("Project created")
+    }
+    catch(error){
+        console.log(error)
+    }
+})
+
 
 const PORT = 8000
 

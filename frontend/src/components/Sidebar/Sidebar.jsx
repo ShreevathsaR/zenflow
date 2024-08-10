@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./Sidebar.css";
 import { FaUserCircle } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
@@ -15,6 +15,7 @@ import { IoMdAdd } from "react-icons/io";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useOrganization } from "../Contexts/OrganizationContext";
 
 const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const navigate = useNavigate();
@@ -32,8 +33,9 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
   const [organizationName, setOrganizationName] = useState("");
 
-  useEffect(() => {
+  const { selectedOrganization, setSelectedOrganization } = useOrganization();
 
+  useEffect(() => {
 
     const fetchUsername = async () => {
       const { data, error } = await supabase.auth.getSession();
@@ -52,12 +54,52 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
         console.log("User is not logged in");
         setUsername("User");
       }
+
+    fetchOrganizations();
+
     };
 
     fetchUsername();
-    fetchOrganizations();
-    fetchProjects();
   }, []);
+
+  useEffect(()=>{
+    if(selectedOrganization){
+      fetchProjects();
+    }  
+  },[selectedOrganization])
+
+  
+  const fetchProjects = async () => {
+    if (!selectedOrganization) {
+      console.error('No organization selected');
+      return;
+    }
+
+
+    const fetchedOrgId = await supabase.from('organizations').select('id').eq('name', selectedOrganization).single();
+
+    if (!fetchedOrgId.data) {
+      console.error('Organization not found');
+      return;
+    }
+
+    const org_id = fetchedOrgId.data.id;
+    console.log(org_id)
+
+    const response = await axios.get(`http://localhost:8000/projects/${org_id}`)
+    .catch((error) => {
+      console.log(error);
+    })
+
+    const fetchedProjectsData = response.data.rows;
+
+
+    const fetchedProjectNames = fetchedProjectsData.map((organization) => {
+      return organization.name
+    })
+    // console.log(fetchedOrganizations)
+    setProjects(fetchedProjectNames);
+  }
 
 
   const fetchOrganizations = async () => {
@@ -67,64 +109,19 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     const response = await axios.get('http://localhost:8000/organizations', {
       params: { id: id }
     })
-    console.log(response.data)
     const organizationsData = response.data;
     const fetchedOrganizations = organizationsData.map((organization) => {
       return organization.name
     })
 
-    setOrganizations(fetchedOrganizations);
-  };
-
-  const fetchProjects = async () => {
-    const org_id = 8;
-    const response = await axios.get(`http://localhost:8000/projects/${org_id}`)
-    .catch((error) => {
-      console.log(error);
-    })
-
-    const fetchedOrganizationsData = response.data.rows;
-    const fetchedOrganizations = fetchedOrganizationsData.map((organization) => {
-      return organization.name
-    })
-    // console.log(fetchedOrganizations)
-    setProjects(fetchedOrganizations);
-  }
-
-
-  const { page, setPage } = usePageContext();
-
-  const handleNotes = () => {
-    setPage("Notes");
-  };
-
-  const handleTodo = () => {
-    setPage("Todo");
-  };
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    // window.location.reload();
-    localStorage.removeItem("currentUserId");
-
-    if (error) {
-      console.log(error.message);
-    } else {
-      navigate("/");
+    if(!fetchedOrganizations){
+      console.log("Error fetching organizations")
+    } else{
+      setSelectedOrganization(fetchedOrganizations[0])
     }
-  };
 
-  const toggleProjects = () => {
-    setShowProjects((prev) => !prev);
-  };
-
-  const toggleOrganizations = () => {
-    setShowOrganizations((prev) => !prev);
-  };
-
-  const addOrganization = () => {
-    setShowAddOrgModal((prev) => !prev);
-  };
+    setOrganizations(fetchedOrganizations);
+};
 
   const createOrganization = async (e) => {
     e.preventDefault();
@@ -143,6 +140,45 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     finally {
       fetchOrganizations();
     }
+  };
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    // window.location.reload();
+    localStorage.removeItem("currentUserId");
+
+    if (error) {
+      console.log(error.message);
+    } else {
+      navigate("/");
+    }
+  };
+
+  const { page, setPage } = usePageContext();
+
+  const handleNotes = () => {
+    setPage("Notes");
+  };
+
+  const handleTodo = () => {
+    setPage("Todo");
+  };
+
+
+  const toggleProjects = () => {
+    setShowProjects((prev) => !prev);
+  };
+
+  const toggleOrganizations = () => {
+    setShowOrganizations((prev) => !prev);
+  };
+
+  const addOrganization = () => {
+    setShowAddOrgModal((prev) => !prev);
+  };
+
+  const handleClickonOrganization = (org) => {
+    setSelectedOrganization(org);
   };
 
   return (
@@ -222,7 +258,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
             <ul className="organization-list">
               {organizations.map((org, index) => {
                 return (
-                  <li className="organization" key={index}>
+                  <li className={selectedOrganization === org ? "selected-organization" : "organization"} key={index} onClick={()=>{handleClickonOrganization(org)}}>
                     {org}
                   </li>
                 );

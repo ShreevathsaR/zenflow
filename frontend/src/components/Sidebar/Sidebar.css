@@ -1,6 +1,7 @@
 .sidebar {
   border-top: 20px solid black;
-  background-image: linear-gradient(to right bottom, #051937, #00235f, #142a86, #4229ab, #7416ca);  width: 23rem;
+  background-image: linear-gradient(to right bottom, #051937, #00235f, #142a86, #4229ab, #7416ca);
+  width: 270px;
   border: none;
   /* border-top-right-radius: 5px; */
   border-bottom-right-radius: 5px;
@@ -82,7 +83,7 @@
 
 
 .profile-section {
-  background-color:  #352879;
+  background-color:  #24244d;
   display: flex;
   height: 2.75rem;
   align-items: center;
@@ -251,8 +252,7 @@
 }
 
 .selected-organization{
-  background-image: linear-gradient(to left, #550094, #6500b6, #6c09c3);
-  padding: 0%;
+  background-image: linear-gradient(to left bottom, #55009463, #6500b6a3, #6c09c3d0);  padding: 0%;
   border: 1px solid rgb(136, 63, 237);
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -260,8 +260,7 @@
 }
 
 .selected-project{
-  background-image: linear-gradient(to left, #550094, #6500b6, #6c09c3);
-  padding: 0%;
+  background-image: linear-gradient(to left bottom, #55009463, #6500b6a3, #6c09c3d0);  padding: 0%;
   border: 1px solid rgb(136, 63, 237);
   /* padding-left: 0.5rem;
   padding-right: 0.5rem; */

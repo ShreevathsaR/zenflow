@@ -4,12 +4,13 @@
     font-family: "Poppins", sans-serif;
 }
 .header{
-    background-color: #0C2D48;
+    background-image: linear-gradient(to right bottom, #051937, #00235f, #142a86, #4229ab, #7416ca);
     color: azure;
     height: 2.75rem;
     display: flex;
     justify-content: space-around;
     align-items: center;
+    /* border-bottom: 2px solid; */
 }
 .header h2{
     font-weight: 700;

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Sidebar.css";
 import { FaUserCircle } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useOrganization } from "../Contexts/OrganizationContext";
 
+import { useProjectContext } from "../Contexts/ProjectContext";
+
 const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const navigate = useNavigate();
   // console.log(setShowSideBar);
@@ -30,13 +32,18 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const [showOrganizations, setShowOrganizations] = useState(true);
 
   const [showAddOrgModal, setShowAddOrgModal] = useState(false);
+  const [showAddProjectModal, setShowAddProjectModal] = useState(false);
 
   const [organizationName, setOrganizationName] = useState("");
+  const [selectedOrgId, setSelectedOrgId] = useState(null);
+
+  const [projectName, setProjectName] = useState("");
+  const [projectDesc, setProjectDesc] = useState("");
 
   const { selectedOrganization, setSelectedOrganization } = useOrganization();
+  const { selectedProject, setSelectedProject } = useProjectContext();
 
   useEffect(() => {
-
     const fetchUsername = async () => {
       const { data, error } = await supabase.auth.getSession();
 
@@ -55,73 +62,81 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
         setUsername("User");
       }
 
-    fetchOrganizations();
-
+      fetchOrganizations();
     };
 
     fetchUsername();
   }, []);
 
-  useEffect(()=>{
-    if(selectedOrganization){
+  useEffect(() => {
+    if (selectedOrganization) {
       fetchProjects();
-    }  
-  },[selectedOrganization])
+    }
+  }, [selectedOrganization]);
 
-  
   const fetchProjects = async () => {
     if (!selectedOrganization) {
-      console.error('No organization selected');
+      console.error("No organization selected");
       return;
     }
 
-
-    const fetchedOrgId = await supabase.from('organizations').select('id').eq('name', selectedOrganization).single();
+    const fetchedOrgId = await supabase
+      .from("organizations")
+      .select("id")
+      .eq("name", selectedOrganization)
+      .single();
 
     if (!fetchedOrgId.data) {
-      console.error('Organization not found');
+      console.error("Organization not found");
       return;
     }
 
     const org_id = fetchedOrgId.data.id;
-    console.log(org_id)
+    setSelectedOrgId(org_id);
+    console.log(org_id);
 
-    const response = await axios.get(`http://localhost:8000/projects/${org_id}`)
-    .catch((error) => {
-      console.log(error);
-    })
+    const response = await axios
+      .get(`http://localhost:8000/projects/${org_id}`)
+      .catch((error) => {
+        console.log(error);
+      });
 
     const fetchedProjectsData = response.data.rows;
 
-
     const fetchedProjectNames = fetchedProjectsData.map((organization) => {
-      return organization.name
-    })
+      return organization.name;
+    });
+
+    if (!fetchedProjectNames) {
+      console.log("Error fetching projects");
+    } else {
+      setSelectedProject(fetchedProjectNames[0]);
+      console.log(selectedProject);
+    }
+
     // console.log(fetchedOrganizations)
     setProjects(fetchedProjectNames);
-  }
-
+  };
 
   const fetchOrganizations = async () => {
-
     const id = localStorage.getItem("currentUserId");
 
-    const response = await axios.get('http://localhost:8000/organizations', {
-      params: { id: id }
-    })
+    const response = await axios.get("http://localhost:8000/organizations", {
+      params: { id: id },
+    });
     const organizationsData = response.data;
     const fetchedOrganizations = organizationsData.map((organization) => {
-      return organization.name
-    })
+      return organization.name;
+    });
 
-    if(!fetchedOrganizations){
-      console.log("Error fetching organizations")
-    } else{
-      setSelectedOrganization(fetchedOrganizations[0])
+    if (!fetchedOrganizations) {
+      console.log("Error fetching organizations");
+    } else {
+      setSelectedOrganization(fetchedOrganizations[0]);
     }
 
     setOrganizations(fetchedOrganizations);
-};
+  };
 
   const createOrganization = async (e) => {
     e.preventDefault();
@@ -131,13 +146,14 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     console.log(name, id);
     setShowAddOrgModal(false);
     try {
-      await axios.post('http://localhost:8000/organizations/create', { name: name, owner_id: id })
+      await axios.post("http://localhost:8000/organizations/create", {
+        name: name,
+        owner_id: id,
+      });
       console.log(`${name} Organization created!!`);
-    }
-    catch (err) {
-      console.log(err)
-    }
-    finally {
+    } catch (err) {
+      console.log(err);
+    } finally {
       fetchOrganizations();
     }
   };
@@ -164,7 +180,6 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     setPage("Todo");
   };
 
-
   const toggleProjects = () => {
     setShowProjects((prev) => !prev);
   };
@@ -177,8 +192,26 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     setShowAddOrgModal((prev) => !prev);
   };
 
-  const handleClickonOrganization = (org) => {
+  const handleClickOnOrganization = (org) => {
     setSelectedOrganization(org);
+  };
+
+  const handleClickOnProject = (project) => {
+    setSelectedProject(project);
+  };
+
+  const createProject = async (e) => {
+    console.log(selectedOrgId);
+    e.preventDefault();
+    console.log(projectName, projectDesc);
+    const data = await axios.post("http://localhost:8000/projects/create", {
+      name: projectName,
+      description: projectDesc,
+      organization_id: selectedOrgId,
+    });
+    console.log(data);
+    fetchProjects();
+    setShowAddProjectModal(false);
   };
 
   return (
@@ -196,37 +229,39 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       </div>
       <div className="sidebar-options">
         <ul>
-          <li>
-            <MdDashboard style={{ paddingRight: "0.4rem" }} />
-            Home
-          </li>
-          <li
-            onClick={() => {
-              handleNotes();
-            }}
-          >
-            <MdViewKanban style={{ paddingRight: "0.4rem" }} />
-            Kanban
-          </li>
-          <li
-            onClick={() => {
-              handleTodo();
-            }}
-          >
-            <RiTodoFill style={{ paddingRight: "0.4rem" }} />
-            Todo
-          </li>
-          <li>
-            <BiChalkboard style={{ paddingRight: "0.4rem" }} />
-            Whiteboard
-          </li>
-          <li
-            className="organizations-section"
-          >
-            <div onClick={() => {
-              toggleOrganizations();
-            }}>
-              <RiTeamFill style={{ paddingRight: "0.4rem" }} />
+          <div className="overview-options">
+            <li>
+              <MdDashboard style={{ paddingRight: "0.4rem" }} />
+              Home
+            </li>
+            <li
+              onClick={() => {
+                handleNotes();
+              }}
+            >
+              <MdViewKanban style={{ paddingRight: "0.4rem" }} />
+              Kanban
+            </li>
+            <li
+              onClick={() => {
+                handleTodo();
+              }}
+            >
+              <RiTodoFill style={{ paddingRight: "0.4rem" }} />
+              Todo
+            </li>
+            <li>
+              <BiChalkboard style={{ paddingRight: "0.4rem" }} />
+              Whiteboard
+            </li>
+          </div>
+          <li className="organizations-section">
+            <div
+              onClick={() => {
+                toggleOrganizations();
+              }}
+            >
+              {/* <RiTeamFill style={{ paddingRight: "0.4rem" }} /> */}
               Organizations
             </div>
             <div
@@ -245,20 +280,37 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                 }}
               />
               {!showOrganizations && (
-                <FaChevronDown onClick={() => {
-                  toggleOrganizations();
-                }} style={{ justifySelf: "center" }} />
+                <FaChevronDown
+                  onClick={() => {
+                    toggleOrganizations();
+                  }}
+                  style={{ justifySelf: "center" }}
+                />
               )}
-              {showOrganizations && <FaChevronUp onClick={() => {
-                toggleOrganizations();
-              }} />}
+              {showOrganizations && (
+                <FaChevronUp
+                  onClick={() => {
+                    toggleOrganizations();
+                  }}
+                />
+              )}
             </div>
           </li>
           {showOrganizations && (
             <ul className="organization-list">
               {organizations.map((org, index) => {
                 return (
-                  <li className={selectedOrganization === org ? "selected-organization" : "organization"} key={index} onClick={()=>{handleClickonOrganization(org)}}>
+                  <li
+                    className={
+                      selectedOrganization === org
+                        ? "selected-organization"
+                        : "organization"
+                    }
+                    key={index}
+                    onClick={() => {
+                      handleClickOnOrganization(org);
+                    }}
+                  >
                     {org}
                   </li>
                 );
@@ -317,13 +369,14 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
             className="projects-section"
             style={{
               justifyContent: "space-between",
-              backgroundColor: "#0C2D48",
             }}
           >
-            <div onClick={() => {
-              toggleProjects();
-            }}>
-              <GoProjectRoadmap style={{ paddingRight: "0.4rem" }} />
+            <div
+              onClick={() => {
+                toggleProjects();
+              }}
+            >
+              {/* <GoProjectRoadmap style={{ paddingRight: "0.4rem" }} /> */}
               Projects
             </div>
             <div
@@ -337,23 +390,109 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                   height: "24px",
                   paddingRight: "0.5rem",
                 }}
+                onClick={() => {
+                  setShowAddProjectModal(true);
+                }}
               />
               {!showProjects && (
-                <FaChevronDown style={{ justifySelf: "center" }} onClick={() => {
-                  toggleProjects();
-                }} />
+                <FaChevronDown
+                  style={{ justifySelf: "center" }}
+                  onClick={() => {
+                    toggleProjects();
+                  }}
+                />
               )}
-              {showProjects && <FaChevronUp onClick={() => {
-                toggleProjects();
-              }} />}
+              {showProjects && (
+                <FaChevronUp
+                  onClick={() => {
+                    toggleProjects();
+                  }}
+                />
+              )}
             </div>
           </li>
           {showProjects && (
-            <ul style={{ paddingLeft: "1rem" }}>
+            <ul
+              style={{
+                paddingLeft: "1rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.3rem",
+                paddingTop: "0.5rem",
+                paddingRight:"0.5rem"
+              }}
+            >
               {projects.map((project, index) => {
-                return <li key={index}>{project}</li>;
+                return (
+                  <li
+                    key={index}
+                    className={
+                      selectedProject === project
+                        ? "selected-project"
+                        : "fetched-project"
+                    }
+                    onClick={() => {
+                      handleClickOnProject(project);
+                    }}
+                  >
+                    {project}
+                  </li>
+                );
               })}
             </ul>
+          )}
+          {showAddProjectModal && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h2>Add a Project</h2>
+                  <button
+                    onClick={() => {
+                      setShowAddProjectModal(false);
+                    }}
+                    className="close-button"
+                  >
+                    &times;
+                  </button>
+                </div>
+                <form onSubmit={createProject}>
+                  <div className="form-group">
+                    <label htmlFor="title">Project Name</label>
+                    <input
+                      type="text"
+                      id="title"
+                      className="input-field"
+                      placeholder="Enter title"
+                      onChange={(e) => setProjectName(e.target.value)}
+                      required
+                    />
+                    <label htmlFor="title">Project Description</label>
+                    <input
+                      type="text"
+                      id="desc"
+                      className="input-field"
+                      placeholder="Enter Description"
+                      onChange={(e) => setProjectDesc(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAddProjectModal(false);
+                      }}
+                      className="cancel-button"
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="submit-button">
+                      Submit
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
           )}
         </ul>
       </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import './LandingPage.css';
+import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
   return (
@@ -13,14 +14,14 @@ const LandingPage = () => {
         </ul>
         <div className="nav-auth-buttons">
           <button className="nav-button" onClick={() => window.location.href = '/login'}>Login</button>
-          <button className="nav-button">Sign Up</button>
+          <button className="nav-button"><Link to='/signup'>Sign Up</Link></button>
         </div>
       </nav>
 
       <div className="hero-section">
         <h1 className="title">ZenFlow</h1>
         <p className="tagline">Your Collaborative Workspace for Seamless Teamwork</p>
-        <button className="get-started-btn">Get Started</button>
+        <button className="get-started-btn"><Link to='/signup' style={{textDecoration:"none","color":"white"}}>Get Started</Link></button>
       </div>
 
       <section className="features">

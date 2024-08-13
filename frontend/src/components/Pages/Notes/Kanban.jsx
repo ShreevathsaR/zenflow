@@ -37,10 +37,10 @@ const Kanban = () => {
   };
 
   const handleAddTask = (index) => {
-    
+
     const newTask = prompt("Enter a task");
     if (!newTask) return;
-    
+
     const sectionToAddTask = [...sections];
 
     sectionToAddTask[index].tasks.push(newTask);
@@ -52,12 +52,12 @@ const Kanban = () => {
 
   return (
     <div className="kanban-container">
-      <div className="kanban-header">
-        <h3>Board Name</h3>
-        <select>
-          <option value="1">Kanban Options</option>
-        </select>
-      </div>
+        <div className="kanban-header">
+          <h3>Board Name</h3>
+          <select>
+            <option value="1">Kanban Options</option>
+          </select>
+        </div>
       <div className="kanban-board">
         <ul className="kanban-sections">
           {sections.map((section, index) => {
@@ -72,7 +72,7 @@ const Kanban = () => {
                       </li>
                     );
                   })}
-                  <div className="add-task" onClick={()=>{handleAddTask(index)}}>Add Task</div>
+                  <div className="add-task" onClick={() => { handleAddTask(index) }}>Add Task</div>
                 </ul>
               </li>
             );

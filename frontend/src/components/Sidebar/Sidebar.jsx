@@ -194,6 +194,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
   const handleClickOnOrganization = (org) => {
     setSelectedOrganization(org);
+    setPage("OrganizationHome")
   };
 
   const handleClickOnProject = (project) => {

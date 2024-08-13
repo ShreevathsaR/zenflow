@@ -1,14 +1,18 @@
 .kanban-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    /* width: 100%; */
+    width: 100%;
     height: 100%;
-    /* background-color: #8db9ce; */
+    background-color:#141f29;
     /* border-radius: 10px; */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     overflow-x: scroll;
+    position: absolute;
+}
 
+.kanban-header-container{
+    width: 100%;
+    position: relative;
 }
 
 .kanban-container .kanban-header {
@@ -26,31 +30,31 @@
     box-sizing: border-box;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
+    /* position: absolute; */
 }
 
 .kanban-board {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    /* width: 100%; */
-    height: 100%;
     border-radius: 0 0 10px 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    overflow-x: scroll;
+    /* overflow-x: scroll; */
 }
 
 .kanban-board .kanban-sections {
     display: flex;
     list-style: none;
     gap: 1rem;
-    width: 100%;
+    /* width: 100%; */
     height: 100%;
     padding-top: 1rem;
     padding-left: 1rem;
+    position: absolute;
 }
 
 .kanban-board li {
-    width: 20%;
+    width: 300px;
     border-radius: 7px 7px 7px 7px;
     display: flex;
     gap: 1rem;

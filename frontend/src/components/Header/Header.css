@@ -4,8 +4,7 @@
     font-family: "Poppins", sans-serif;
 }
 .header{
-    background-image: linear-gradient(to right bottom, #051937, #00235f, #142a86, #4229ab, #7416ca);
-    color: azure;
+    background-image: linear-gradient(to bottom, #07263c, #062030, #051925, #01121a);    color: azure;
     height: 2.75rem;
     display: flex;
     justify-content: space-around;

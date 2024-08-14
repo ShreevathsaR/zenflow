@@ -9,6 +9,7 @@ import './OrganizationHome.css'
 const OrganizationHome = () => {
 
     const [projects,setProjects] = useState([]);
+    const [orgUsers,setOrgUsers] = useState([]);
 
     const { selectedOrganization, setSelectedOrganization } = useOrganization();
     const { selectedProject, setSelectedProject } = useProjectContext();
@@ -51,7 +52,43 @@ const OrganizationHome = () => {
             setProjects(fetchedProjectNames);
           };
 
+          const fetchedOrganizationUsers = async () => {
+
+            const fetchedOrgId = await supabase
+            .from("organizations")
+            .select("id")
+            .eq("name", selectedOrganization)
+            .single();
+      
+          if (!fetchedOrgId.data) {
+            console.error("Organization not found");
+            return;
+          }
+      
+          const org_id = fetchedOrgId.data.id;
+
+            try {
+               const response = await axios.get(`http://localhost:8000/organization/users/${org_id}`)
+               console.log('Fetched users:',response.data)
+
+               const fetchedUsers = response.data;
+                const fetchedOrgUsersId = fetchedUsers.map((user,index) => {
+                    return user.user_id
+                })
+
+                setOrgUsers(fetchedOrgUsersId);
+
+            } catch (error) {
+                console.log(error)
+            }
+
+          }
+
           fetchProjects();
+
+          if(projects){
+            fetchedOrganizationUsers();
+          }
     },[selectedOrganization])
 
     return (
@@ -63,8 +100,9 @@ const OrganizationHome = () => {
                 <div className='org-collaborators'>
                     <ul>
                         <h3>Collaborators</h3>
-                        <li>Collaborator one</li>
-                        <li>Collaborator two</li>
+                        {orgUsers && orgUsers.map((user,index) => {
+                            return <li key={index}>{user}</li>
+                        })}
                     </ul>
                     <div className='invite-link'>Invite Link<MdContentCopy /></div>
                 </div>

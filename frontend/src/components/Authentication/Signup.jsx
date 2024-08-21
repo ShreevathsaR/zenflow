@@ -32,6 +32,7 @@ function Signup() {
         {
           id: data.user.id,
           full_name: name,
+          email: email,
           created_at: new Date().toISOString()
         }
       ])

@@ -4,19 +4,23 @@ import React, { useState } from "react";
 import "./Login.css";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { InfinitySpin } from "react-loader-spinner";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
+    setLoading(true);
     e.preventDefault();
 
-    if(!email || !password){
-      setError('Please fill in all fields');
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      setLoading(false);
       return;
     }
 
@@ -28,17 +32,30 @@ const LoginPage = () => {
     if (error) {
       // Display error message if login fails
       setError(error.message);
+      setLoading(false);
     } else {
-      // Success message for the user
-      alert("Login successful!");
-      console.log(data.user)
-      navigate('/home')
+      console.log(data.user);
+      navigate("/home");
+      setLoading(false);
     }
   };
 
-
   return (
     <div className="login-page">
+      {loading && (
+        <div className="modal-overlay">
+          <div
+            className="spinner-container"
+          >
+            <InfinitySpin
+              visible={true}
+              width="200"
+              ariaLabel="infinity-spin-loading"
+              color="rgba(73, 76, 212, 1)"
+            />
+          </div>
+        </div>
+      )}
       <div className="login-container">
         <div className="login-card">
           <h2>Login</h2>
@@ -65,7 +82,7 @@ const LoginPage = () => {
               />
             </div>
             <button type="submit" className="login-btn">
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
           <p className="login-link">

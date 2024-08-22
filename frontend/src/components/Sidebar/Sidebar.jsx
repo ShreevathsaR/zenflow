@@ -7,17 +7,17 @@ import { MdDashboard } from "react-icons/md";
 import { MdViewKanban } from "react-icons/md";
 import { BiChalkboard } from "react-icons/bi";
 import { RiTodoFill } from "react-icons/ri";
-import { GoProjectRoadmap } from "react-icons/go";
 import { FaChevronUp } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
-import { RiTeamFill } from "react-icons/ri";
 import { IoMdAdd } from "react-icons/io";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useOrganization } from "../Contexts/OrganizationContext";
-
 import { useProjectContext } from "../Contexts/ProjectContext";
+
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const navigate = useNavigate();
@@ -40,11 +40,14 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const [projectName, setProjectName] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
 
+  const [loading, setLoading] = useState(true);
+
   const { selectedOrganization, setSelectedOrganization } = useOrganization();
   const { selectedProject, setSelectedProject } = useProjectContext();
 
   useEffect(() => {
     const fetchUsername = async () => {
+      setLoading(true);
       const { data, error } = await supabase.auth.getSession();
 
       if (data) {
@@ -57,8 +60,10 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
           .eq("id", currentUserId);
 
         setUsername(username.data[0].full_name);
+        setLoading(false);
       } else {
         console.log("User is not logged in");
+        setLoading(false);
         setUsername("User");
       }
 
@@ -75,7 +80,9 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   }, [selectedOrganization]);
 
   const fetchProjects = async () => {
+    setLoading(true);
     if (!selectedOrganization) {
+      setLoading(false);
       console.error("No organization selected");
       return;
     }
@@ -87,6 +94,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       .single();
 
     if (!fetchedOrgId.data) {
+      setLoading(false);
       console.error("Organization not found");
       return;
     }
@@ -116,6 +124,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
     // console.log(fetchedOrganizations)
     setProjects(fetchedProjectNames);
+    setLoading(false);
   };
 
   const fetchOrganizations = async () => {
@@ -131,8 +140,10 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
     if (!fetchedOrganizations) {
       console.log("Error fetching organizations");
+      setLoading(false);
     } else {
       setSelectedOrganization(fetchedOrganizations[0]);
+      setLoading(false);
     }
 
     setOrganizations(fetchedOrganizations);
@@ -194,7 +205,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
   const handleClickOnOrganization = (org) => {
     setSelectedOrganization(org);
-    setPage("OrganizationHome")
+    setPage("OrganizationHome");
   };
 
   const handleClickOnProject = (project) => {
@@ -297,7 +308,17 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               )}
             </div>
           </li>
-          {showOrganizations && (
+          {loading && (
+            <div style={{ width: "90%", margin: "auto" }}>
+              <SkeletonTheme baseColor="#ffffff21" highlightColor="#ffffff25">
+                <p>
+                  <Skeleton count={1} duration={1}/>
+                  <Skeleton count={1} duration={0.6}/>
+                </p>
+              </SkeletonTheme>
+            </div>
+          )}
+          {!loading && showOrganizations && (
             <ul className="organization-list">
               {organizations.map((org, index) => {
                 return (
@@ -412,7 +433,19 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               )}
             </div>
           </li>
-          {showProjects && (
+
+          {loading && (
+            <div style={{ width: "90%", margin: "auto" }}>
+              <SkeletonTheme baseColor="#ffffff21" highlightColor="#ffffff25">
+                <p>
+                  <Skeleton count={1} duration={1}/>
+                  <Skeleton count={1} duration={1.25}/>
+                  <Skeleton count={1} duration={0.6}/>
+                </p>
+              </SkeletonTheme>
+            </div>
+          )}
+          {!loading && showProjects && (
             <ul
               style={{
                 paddingLeft: "1rem",
@@ -420,7 +453,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                 flexDirection: "column",
                 gap: "0.3rem",
                 paddingTop: "0.5rem",
-                paddingRight:"0.5rem"
+                paddingRight: "0.5rem",
               }}
             >
               {projects.map((project, index) => {

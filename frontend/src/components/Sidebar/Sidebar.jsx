@@ -40,6 +40,8 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const [projectName, setProjectName] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
 
+  const [logout, setLogout] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
   const { selectedOrganization, setSelectedOrganization } = useOrganization();
@@ -169,9 +171,9 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogout = async (e) => {
+    e.preventDefault();
     const { error } = await supabase.auth.signOut();
-    // window.location.reload();
     localStorage.removeItem("currentUserId");
 
     if (error) {
@@ -231,9 +233,46 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       <div className="profile-section">
         <FaUserCircle
           onClick={() => {
-            handleLogout();
+            setLogout(true);
           }}
         />
+        {logout && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h2 style={{ color: "black" }}>Are you sure?</h2>
+                <button
+                  onClick={() => {
+                    setLogout(false);
+                  }}
+                  className="close-button"
+                >
+                  &times;
+                </button>
+              </div>
+              <form>
+                <div className="form-group" style={{ color: "black", textAlign: "center" }}>
+                  Do you wish to logout?
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLogout(false);
+                    }}
+                    className="cancel-button"
+                  >
+                    Cancel
+                  </button>
+                  <button className="submit-button"
+                    onClick={handleLogout}>
+                    Yes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
         <div className="sidebar-username">{username}</div>
         <div className="notifications">
           <IoNotifications />
@@ -312,8 +351,8 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
             <div style={{ width: "90%", margin: "auto" }}>
               <SkeletonTheme baseColor="#ffffff21" highlightColor="#ffffff25">
                 <p>
-                  <Skeleton count={1} duration={1}/>
-                  <Skeleton count={1} duration={0.6}/>
+                  <Skeleton count={1} duration={1} />
+                  <Skeleton count={1} duration={0.6} />
                 </p>
               </SkeletonTheme>
             </div>
@@ -438,9 +477,9 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
             <div style={{ width: "90%", margin: "auto" }}>
               <SkeletonTheme baseColor="#ffffff21" highlightColor="#ffffff25">
                 <p>
-                  <Skeleton count={1} duration={1}/>
-                  <Skeleton count={1} duration={1.25}/>
-                  <Skeleton count={1} duration={0.6}/>
+                  <Skeleton count={1} duration={1} />
+                  <Skeleton count={1} duration={1.25} />
+                  <Skeleton count={1} duration={0.6} />
                 </p>
               </SkeletonTheme>
             </div>

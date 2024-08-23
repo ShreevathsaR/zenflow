@@ -5,11 +5,13 @@ import { MdContentCopy } from "react-icons/md";
 import { IoMdAdd } from "react-icons/io";
 import { supabase } from "../../supabaseClient";
 import axios from "axios";
+import { InfinitySpin } from "react-loader-spinner";
 import "./OrganizationHome.css";
 
 const OrganizationHome = () => {
   const [projects, setProjects] = useState([]);
   const [orgUsers, setOrgUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [collaboratorEmail, setCollaboratorEmail] = useState("");
 
@@ -20,16 +22,18 @@ const OrganizationHome = () => {
 
   useEffect(() => {
 
-   const getSession = async () => {
+    const getSession = async () => {
       try {
-      const { data, error } = await supabase.auth.getSession();
+        const { data, error } = await supabase.auth.getSession();
         console.log(data)
 
-    } catch (error) {
-      console.log(error.message);
-    }}
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
 
     const fetchProjects = async () => {
+      setLoading(true);
       const fetchedOrgId = await supabase
         .from("organizations")
         .select("id")
@@ -38,6 +42,7 @@ const OrganizationHome = () => {
 
       if (!fetchedOrgId.data) {
         console.error("Organization not found");
+        setLoading(false);
         return;
       }
 
@@ -63,54 +68,7 @@ const OrganizationHome = () => {
 
       // console.log(fetchedOrganizations)
       setProjects(fetchedProjectNames);
-    };
-
-    const fetchedOrganizationUsers = async () => {
-      const fetchedOrgId = await supabase
-        .from("organizations")
-        .select("id")
-        .eq("name", selectedOrganization)
-        .single();
-
-      if (!fetchedOrgId.data) {
-        console.error("Organization not found");
-        return;
-      }
-
-      const org_id = fetchedOrgId.data.id;
-
-      try {
-        const response = await axios.get(
-          `http://localhost:8000/organization/users/${org_id}`
-        );
-        console.log("Fetched users:", response.data);
-
-        const fetchedUsers = response.data;
-        const fetchedOrgUsersId = fetchedUsers.map((user) => {
-          return user.user_id;
-        });
-
-        const fetchedOrgUsersName = await Promise.all(
-          fetchedOrgUsersId.map(async (userid) => {
-            const { data, error } = await supabase
-              .from("profiles")
-              .select("*")
-              .eq("id", userid)
-              .single();
-
-            if (error) {
-              console.log(error);
-              return null;
-            }
-
-            return data.full_name;
-          })
-        );
-
-        setOrgUsers(fetchedOrgUsersName);
-      } catch (error) {
-        console.log(error);
-      }
+      setLoading(false);
     };
 
     fetchProjects();
@@ -119,7 +77,57 @@ const OrganizationHome = () => {
     if (projects) {
       fetchedOrganizationUsers();
     }
-  }, [selectedOrganization,collaboratorEmail]);
+  }, [selectedOrganization, collaboratorEmail]);
+
+  const fetchedOrganizationUsers = async () => {
+    setLoading(true);
+    const fetchedOrgId = await supabase
+      .from("organizations")
+      .select("id")
+      .eq("name", selectedOrganization)
+      .single();
+
+    if (!fetchedOrgId.data) {
+      console.error("Organization not found");
+      return;
+    }
+
+    const org_id = fetchedOrgId.data.id;
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/organization/users/${org_id}`
+      );
+      console.log("Fetched users:", response.data);
+
+      const fetchedUsers = response.data;
+      const fetchedOrgUsersId = fetchedUsers.map((user) => {
+        return user.user_id;
+      });
+
+      const fetchedOrgUsersName = await Promise.all(
+        fetchedOrgUsersId.map(async (userid) => {
+          const { data, error } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", userid)
+            .single();
+
+          if (error) {
+            setLoading(false);
+            console.log(error);
+            return null;
+          }
+          setLoading(false);
+          return data.full_name;
+        })
+      );
+
+      setOrgUsers(fetchedOrgUsersName);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleAddUsers = (e) => {
     e.preventDefault();
@@ -127,13 +135,15 @@ const OrganizationHome = () => {
   };
 
   const AddUser = async (e) => {
+    setLoading(true);
+    setAddUsersModal(false)
     e.preventDefault();
     console.log("Add users", collaboratorEmail);
 
     try {
 
       const { data, error } = await supabase.from('profiles').select('id').eq('email', collaboratorEmail).single();
-      const collabUserId =  data.id;
+      const collabUserId = data.id;
 
       const fetchedOrgId = await supabase
         .from("organizations")
@@ -148,18 +158,23 @@ const OrganizationHome = () => {
 
       const org_id = fetchedOrgId.data.id;
 
-      if (!collabUserId){
+      if (!collabUserId) {
         console.log('User not found')
         return;
       } else {
-        const {data,error} = await supabase.from('userorganizations').insert({
-        organization_id: org_id,
-        user_id: collabUserId
-      })
-      console.log(error);
-    }
+        const { data, error } = await supabase.from('userorganizations').insert({
+          organization_id: org_id,
+          user_id: collabUserId
+        })
+        console.log(error);
+        setAddUsersModal(false);
+        fetchedOrganizationUsers();
+        setLoading(false);
+      }
     } catch (err) {
       console.log(err);
+      setLoading(false);
+      setAddUsersModal(false);
     }
 
     setAddUsersModal(false);
@@ -183,6 +198,20 @@ const OrganizationHome = () => {
               Collaborators
               <IoMdAdd onClick={handleAddUsers} />
             </h3>
+            {loading && (
+              <div className="modal-overlay">
+                <div
+                  className="spinner-container"
+                >
+                  <InfinitySpin
+                    visible={true}
+                    width="200"
+                    ariaLabel="infinity-spin-loading"
+                    color="rgba(73, 76, 212, 1)"
+                  />
+                </div>
+              </div>
+            )}
 
             {addUsersModal && (
               <div className="modal-overlay">

@@ -259,14 +259,14 @@ const OrganizationHome = () => {
                 </div>
               </div>
             )}
-
+            {orgUsers.length===0 && (<p style={{opacity:"0.25", textAlign:"center", cursor:"default", paddingTop:"2rem"}}>No collaborators</p>)}
             {orgUsers &&
               orgUsers.map((user, index) => {
                 return <li key={index}>{user}</li>;
               })}
           </ul>
           <div className="invite-link">
-            Invite Link
+            Invite Links
             <MdContentCopy />
           </div>
         </div>

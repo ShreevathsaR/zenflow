@@ -30,7 +30,7 @@ const ProtectedRoutes = ({ children }) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/" />;
-  }
+  } 
 
   return children;
 };

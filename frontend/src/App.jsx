@@ -37,7 +37,7 @@ function App() {
     <ProjectContextProvider>
       <OrganizationProvider>
         <PageContextProvider>
-          <Header />
+          {/* <Header /> */}
           <div
             style={{
               display: "flex",

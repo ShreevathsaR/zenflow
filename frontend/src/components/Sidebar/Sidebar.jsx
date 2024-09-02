@@ -103,7 +103,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
     const org_id = fetchedOrgId.data.id;
     setSelectedOrgId(org_id);
-    console.log(org_id);
+    // console.log(org_id);
 
     const response = await axios
       .get(`http://localhost:8000/projects/${org_id}`)
@@ -121,7 +121,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       console.log("Error fetching projects");
     } else {
       setSelectedProject(fetchedProjectNames[0]);
-      console.log(selectedProject);
+      // console.log(selectedProject);
     }
 
     // console.log(fetchedOrganizations)
@@ -186,11 +186,11 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const { page, setPage } = usePageContext();
 
   const handleNotes = () => {
-    setPage("Notes");
+    setPage('Notes');
   };
 
   const handleTodo = () => {
-    setPage("Todo");
+    setPage('Todo')
   };
 
   const toggleProjects = () => {

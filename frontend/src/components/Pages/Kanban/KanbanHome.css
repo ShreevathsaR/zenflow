@@ -1,0 +1,68 @@
+.organization-select,.project-select {
+    background-color: transparent;
+    border: 1px solid #ccc; /* Light gray border */
+    color: white;
+    font-size: 16px;
+    display: flex;
+    align-items: center; /* Centers content vertically */
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: 0.3rem 0.5rem 0.3rem 0.5rem; /* Adjusted padding for better spacing */
+    transition: background-color 0.3s ease, border-color 0.3s ease; /* Smooth transition effect */
+    position: relative;
+}
+
+.organization-select:hover,.project-select:hover{
+    /* background-color: rgba(255, 255, 255, 0.1);  */
+    border-color: #888; /* Darker border on hover */
+}
+
+.organization-select:focus,.project-select:focus {
+    outline: none; /* Remove default focus outline */
+    border-color: #3E4A61; /* Steel Blue border on focus */
+    box-shadow: 0 0 0 2px rgba(62, 74, 97, 0.5); /* Soft focus ring */
+}
+
+/* Custom styling for the dropdown options */
+.organization-select option,.project-select option {
+    background-color: #2A2A2A; /* Dark background for options */
+    color: white; /* White text for options */
+    padding: 0.5rem 1rem; /* Padding for options */
+    border-radius: 5px; /* Rounded corners for options */
+    margin: 0.2rem 0; /* Space between options */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.boards-li{
+    color:white;
+    cursor: pointer;
+    background-color: #01121a;
+    border-radius: 10px;
+    padding: 0.3rem 0.75rem 0.3rem 0.75rem;
+}
+
+.selected-board-li{
+    border: 1px solid white;
+    color:white;
+    cursor: pointer;
+    background-color: #01121a;
+    border-radius: 10px;
+    padding: 0.3rem 0.75rem 0.3rem 0.75rem;
+}
+
+.board-header{
+    display: flex;
+    background-color: #0C2D48;
+    gap: 2rem;
+    align-items: center;
+    height: 3rem;
+}
+.board-header h3{
+    padding-left:1rem;
+}
+.board-header ul{
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    padding-left: 3rem;
+}

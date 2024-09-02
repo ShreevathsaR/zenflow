@@ -6,32 +6,6 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-
-// Docker Postgres queries 
-// app.get('/notes/:id', async (req,res)=>{
-//     const id= req.params.id;
-//     try {
-//         const notes = await pool.query('SELECT * FROM notes WHERE id = $1',[id])
-//         res.json(notes.rows)
-//     } catch (error) {
-//         console.log(error)
-//     }
-// })
-
-// app.post('/notes/create/:id', async (req,res)=>{
-//     const {title,desc} = req.body;
-//     const {id} = req.params;
-//     try{
-//         await pool.query('INSERT INTO notes (notes_title, notes_desc, id) VALUES ($1, $2, $3)',[title,desc,id])
-//         res.send('Note added')
-//     }
-//     catch(error){
-//         console.log(error)
-//     }
-// })
-
-
-
 app.get('/organizations', async (req, res) => {
 
     const { id } = req.query;
@@ -85,6 +59,19 @@ app.post('/projects/create', async (req, res) => {
         res.send("Project created")
     }
     catch (error) {
+        console.log(error)
+    }
+})
+
+app.post('/insertSections', async (req,res)=>{
+    const {board_id,name,position} = req.body;  
+    
+    console.log(req.body)
+    try{
+        await pool.query('INSERT INTO sections (board_id ,name ,position) VALUES ($1,$2,$3)',[board_id,name,position])
+        res.send("Board created")
+    }
+    catch(error){
         console.log(error)
     }
 })

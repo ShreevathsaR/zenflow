@@ -121,10 +121,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       console.log("Error fetching projects");
     } else {
       setSelectedProject(fetchedProjectNames[0]);
-      // console.log(selectedProject);
     }
-
-    // console.log(fetchedOrganizations)
     setProjects(fetchedProjectNames);
     setLoading(false);
   };
@@ -186,11 +183,11 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const { page, setPage } = usePageContext();
 
   const handleNotes = () => {
-    setPage('Notes');
+    setPage("Notes");
   };
 
   const handleTodo = () => {
-    setPage('Todo')
+    setPage("Todo");
   };
 
   const toggleProjects = () => {
@@ -251,7 +248,10 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                 </button>
               </div>
               <form>
-                <div className="form-group" style={{ color: "black", textAlign: "center" }}>
+                <div
+                  className="form-group"
+                  style={{ color: "black", textAlign: "center" }}
+                >
                   Do you wish to logout?
                 </div>
                 <div className="modal-footer">
@@ -264,8 +264,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                   >
                     Cancel
                   </button>
-                  <button className="submit-button"
-                    onClick={handleLogout}>
+                  <button className="submit-button" onClick={handleLogout}>
                     Yes
                   </button>
                 </div>

@@ -24,13 +24,13 @@ const KanbanHome = () => {
 
   useEffect(() => {
     fetchData();
-    handleFetchBoards();
   }, [selectedOrganization, selectedProject]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
       await Promise.all([fetchProjects(), fetchOrganizations()]);
+      handleFetchBoards();
     } finally {
       setLoading(false);
     }
@@ -122,17 +122,46 @@ const KanbanHome = () => {
         console.log(projectIdError);
       } else {
         const selectedProjectId = projectId.id;
-        const { data, error } = await supabase.from("boards").insert([
-          {
-            name: board_name,
-            project_id: selectedProjectId,
-          },
-        ]);
+        const { data, error } = await supabase
+          .from("boards")
+          .insert([
+            {
+              name: board_name,
+              project_id: selectedProjectId,
+            },
+          ])
+          .select();
         if (error) {
           console.log(error);
         } else {
-          console.log(data);
-          handleFetchBoards();
+          // console.log("New board data",data)
+          const newBoardId = data[0].id;
+          const defaultSections = ["To do", "In progress", "Done"];
+
+          for (let i = 0; i < defaultSections.length; i++) {
+            const section = defaultSections[i];
+            const { data, error } = await supabase.from("sections").insert([
+              {
+                name: section,
+                board_id: newBoardId,
+                position: i,
+              },
+            ]);
+            if (error) {
+              console.log(error);
+            } else {
+              console.log(data);
+              console.log("Default sections inserted: ", data);
+              handleFetchBoards();
+            }
+          }
+
+          if (error) {
+            console.log(error);
+          } else {
+            console.log(data);
+            handleFetchBoards();
+          }
         }
       }
     }

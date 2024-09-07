@@ -6,8 +6,14 @@ import axios from "axios";
 
 const Kanban = ({ value }) => {
   const [sections, setSections] = useState([]);
+  const [tasks, setTasks] = useState([]);
 
-  const { selectedBoard, setSelectedBoard, selectedBoardId, setSelectedBoardId } = value;
+  const {
+    selectedBoard,
+    setSelectedBoard,
+    selectedBoardId,
+    setSelectedBoardId,
+  } = value;
 
   const { selectedProject, setSelectedProject } = useProjectContext();
 
@@ -28,11 +34,12 @@ const Kanban = ({ value }) => {
 
   useEffect(() => {
     fetchBoardData();
-    fetchSections();
+    // fetchSections();
+    fetchSectionsAndTasks();
     // console.log(selectedBoard);
     // console.log(selectedBoardId);
     // console.log(value)
-  }, [selectedBoard]);
+  }, [selectedBoard, selectedBoardId]);
 
   const fetchBoardData = async () => {
     const { data, error } = await supabase
@@ -56,61 +63,103 @@ const Kanban = ({ value }) => {
     }
   };
 
-  const handleAddSection = async() => {
-    console.log(selectedBoardId)
+  const handleAddSection = async () => {
+    console.log(selectedBoardId);
     const sectionTitle = prompt("Enter a section title");
 
     if (!sectionTitle) return;
-    
+
     const response = await axios.post("http://localhost:8000/insertSections", {
       board_id: selectedBoardId,
       name: sectionTitle,
-      position:3
+      position: 3,
     });
-    if(response.status === 200){
+    if (response.status === 200) {
       console.log(response);
-      fetchSections();
+      fetchSectionsAndTasks();
     } else {
-      console.log("Error adding section")
+      console.log("Error adding section");
     }
   };
 
-  // const handleAddTask = (index) => {
+  const handleAddTask = async (sectionId) => {
+    const newTask = prompt("Enter a task");
+    if (!newTask) return;
+    console.log(sectionId.id);
 
-  //   const newTask = prompt("Enter a task");
-  //   if (!newTask) return;
-
-  //   const sectionToAddTask = [...sections];
-
-  //   sectionToAddTask[index].tasks.push(newTask);
-
-  //   setSections(sectionToAddTask);
-
-  //   localStorage.setItem("sections", JSON.stringify(sections));
-  // }
-
-  const fetchSections = async () => {
     const { data, error } = await supabase
-      .from("boards")
-      .select("id")
-      .eq("name", selectedBoard)
-      .single();
-    const board_id = data.id;
-    // console.log(board_id);
-
+      .from("tasks")
+      .insert([
+        {
+          section_id: sectionId.id,
+          name: newTask,
+          position: 1,
+        },
+      ])
+      .select();
     if (error) {
       console.log(error);
-      return;
     } else {
-      const { data, error } = await supabase
-        .from("sections")
-        .select("*")
-        .eq("board_id", board_id);
-      setSections(data);
-      // console.log("Sections:", data);
+      console.log(data);
+      fetchSectionsAndTasks();
     }
+  };
+
+  // const fetchSections = async () => {
+  //   const { data, error } = await supabase
+  //     .from("boards")
+  //     .select("id")
+  //     .eq("name", selectedBoard)
+  //     .single();
+  //   const board_id = data.id;
+
+  //   if (error) {
+  //     console.log(error);
+  //     return;
+  //   } else {
+  //     const { data, error } = await supabase
+  //       .from("sections")
+  //       .select("*")
+  //       .eq("board_id", board_id);
+  //     setSections(data);
+  //     // console.log("Sections:", data);
+  //   }
+  //   if (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  const fetchTasks = async (sectionId) => {
+    const { data, error } = await supabase
+      .from("tasks")
+      .select("*")
+      .eq("section_id", sectionId.id);
+    setTasks(data);
+    console.log(data);
+  };
+
+  const fetchSectionsAndTasks = async () => {
+    const { data, error } = await supabase
+      .from('sections')
+      .select(`
+        id, 
+        name,
+        tasks (
+          id, 
+          name, 
+          description, 
+          due_date, 
+          completed
+        )
+      `)
+      .eq('board_id', selectedBoardId); // Remove ordering by 'position'
+  
     if (error) {
-      console.log(error);
+      console.log('Error fetching sections and tasks:', error.message);
+    } else {
+      console.log('Sections and tasks:', data);
+      setSections(data)
+      return data; // Return the fetched data for rendering
     }
   };
 
@@ -118,39 +167,22 @@ const Kanban = ({ value }) => {
     <div className="kanban-container">
       <div className="kanban-board">
         <ul className="kanban-sections">
-          {/* {sections.map((section, index) => {
-            return (
-              <li className="individual-section" key={index}>
-                <ul className="kanban-card">
-                  <h3>{section.title}</h3>
-                  {section.tasks.map((sec, index) => {
-                    return (
-                      <li className="todo" key={index} draggable="true">
-                        {sec}
-                      </li>
-                    );
-                  })}
-                  <div className="add-task" onClick={() => { handleAddTask(index) }}>Add Task</div>
-                </ul>
-              </li>
-            );
-          })} */}
           {sections.map((section, index) => {
             return (
               <li className="individual-section" key={index}>
                 <ul className="kanban-card">
                   <h3>{section.name}</h3>
-                  {/* {section.tasks.map((sec, index) => {
+                  {section.tasks.map((taskDetails, index) => {
                     return (
                       <li className="todo" key={index} draggable="true">
-                        {sec}
+                        {taskDetails.name}
                       </li>
                     );
-                  })} */}
+                  })}
                   <div
                     className="add-task"
                     onClick={() => {
-                      handleAddTask(index);
+                      handleAddTask(section);
                     }}
                   >
                     Add Task

@@ -165,10 +165,8 @@ const Kanban = ({ value }) => {
   const onDragEnd = (result) => {
     const { destination, source, draggableId, type } = result;
 
-    console.log("destination sec id", destination.droppableId);
-    console.log("source sec id", source.droppableId);
-    console.log("draggableId", draggableId);
-    console.log("type", type);
+    console.log("destination sec index", destination.index);
+    console.log("source sec index", source.index);
 
     // If there's no destination, or if the position hasn't changed, do nothing
     if (!destination) return;
@@ -318,13 +316,13 @@ const Kanban = ({ value }) => {
           section_id: destinationSectionId.id,
         })
         .eq("id", task.id);
-      
-        if(response.error == null) {
-          console.log("Task order updated successfully");
-          fetchSectionsAndTasks();
-        } else {
-          console.error("Error updating task order:", response.error);
-        }
+
+      if (response.error == null) {
+        console.log("Task order updated successfully");
+        fetchSectionsAndTasks();
+      } else {
+        console.error("Error updating task order:", response.error);
+      }
     }
   };
 
@@ -381,87 +379,89 @@ const Kanban = ({ value }) => {
   return (
     <div className="kanban-container">
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable
-          droppableId="all-sections"
-          type="section"
-          direction="horizontal"
-        >
-          {(provided) => (
-            <div
-              className="kanban-board"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              {sections.map((section, index) => (
-                <Draggable
-                  key={section.id}
-                  draggableId={section.id.toString()}
-                  index={index}
-                >
-                  {(provided) => (
-                    <div
-                      className="individual-section"
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <h3>{section.name}</h3>
-                      <Droppable
-                        droppableId={section.id.toString()} // This is important
-                        type="task"
-                      >
-                        {(provided) => (
-                          <ul
-                            className="kanban-card"
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                          >
-                            {section.tasks.map((task, taskIndex) => (
-                              <Draggable
-                                key={task.id.toString()}
-                                draggableId={task.id.toString()}
-                                index={taskIndex}
-                              >
-                                {(provided) => (
-                                  <li
-                                    className="todo"
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    style={{
-                                      cursor: "grab",
-                                      ...provided.draggableProps.style,
-                                    }}
-                                  >
-                                    {task.name}
-                                  </li>
-                                )}
-                              </Draggable>
-                            ))}
-                            {provided.placeholder}
-                            <div
-                              className="add-task"
-                              onClick={() => handleAddTask(section)}
-                            >
-                              Add Task
-                            </div>
-                          </ul>
-                        )}
-                      </Droppable>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
+        <div>
+          <Droppable
+            droppableId="all-sections"
+            type="section"
+            direction="horizontal"
+          >
+            {(provided) => (
               <div
-                className="section-addition"
-                onClick={() => handleAddSection()}
+                className="kanban-board"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
               >
-                Add section
+                {sections.map((section, index) => (
+                  <Draggable
+                    key={section.id}
+                    draggableId={section.id.toString()}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <div
+                        className="individual-section"
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <h3>{section.name}</h3>
+                        <Droppable
+                          droppableId={section.id.toString()} // This is important
+                          type="task"
+                        >
+                          {(provided) => (
+                            <ul
+                              className="kanban-card"
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                            >
+                              {section.tasks.map((task, taskIndex) => (
+                                <Draggable
+                                  key={task.id.toString()}
+                                  draggableId={task.id.toString()}
+                                  index={taskIndex}
+                                >
+                                  {(provided) => (
+                                    <li
+                                      className="todo"
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      style={{
+                                        cursor: "grab",
+                                        ...provided.draggableProps.style,
+                                      }}
+                                    >
+                                      {task.name}
+                                    </li>
+                                  )}
+                                </Draggable>
+                              ))}
+                              {provided.placeholder}
+                              <div
+                                className="add-task"
+                                onClick={() => handleAddTask(section)}
+                              >
+                                Add Task
+                              </div>
+                            </ul>
+                          )}
+                        </Droppable>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+                <div
+                  className="section-addition"
+                  onClick={() => handleAddSection()}
+                >
+                  Add section
+                </div>
               </div>
-            </div>
-          )}
-        </Droppable>
+            )}
+          </Droppable>
+        </div>
       </DragDropContext>
     </div>
   );

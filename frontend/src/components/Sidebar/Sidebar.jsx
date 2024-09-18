@@ -285,6 +285,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               Home
             </li>
             <li
+              className={page === "Notes" ? "selected-overview" : ""}
               onClick={() => {
                 handleNotes();
               }}

@@ -262,6 +262,10 @@
   backdrop-filter: brightness(1.8);
 }
 
+.selected-overview{
+  backdrop-filter: brightness(1.75);
+}
+
 @media only screen and (max-width: 768px) {
   .sidebar {
     width: 80%;

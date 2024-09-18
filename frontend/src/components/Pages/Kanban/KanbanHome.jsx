@@ -233,26 +233,27 @@ const KanbanHome = () => {
             );
           })}
         </ul>
-        <button
-          style={{
-            backgroundColor: "#184365",
-            color: "white",
-            padding: "0.5rem",
-            display: "flex",
-            gap: "0.7rem",
-            alignItems: "center",
-            // border:"1px solid #f0f0f0",
-            borderRadius: "0.5rem",
-            cursor: "pointer",
-            fontWeight: "600",
-          }}
-          onClick={() => {
-            handleBoardCreate();
-          }}
-        >
-          Create a Board
-          <IoMdAdd />
-        </button>
+        {selectedProject && (
+          <button
+            style={{
+              backgroundColor: "#184365",
+              color: "white",
+              padding: "0.5rem",
+              display: "flex",
+              gap: "0.7rem",
+              alignItems: "center",
+              borderRadius: "0.5rem",
+              cursor: "pointer",
+              fontWeight: "600",
+            }}
+            onClick={() => {
+              handleBoardCreate();
+            }}
+          >
+            Create a Board
+            <IoMdAdd />
+          </button>
+        )}
       </div>
       <div className="board-content">
         {selectedBoard && (
@@ -265,7 +266,7 @@ const KanbanHome = () => {
             }}
           />
         )}
-        {!selectedBoard && (
+        {selectedProject && !selectedBoard && (
           <p
             style={{
               color: "white",
@@ -275,6 +276,18 @@ const KanbanHome = () => {
             }}
           >
             Please create a board
+          </p>
+        )}
+        {!selectedProject && (
+          <p
+            style={{
+              color: "white",
+              display: "flex",
+              justifyContent: "center",
+              paddingTop: "5rem",
+            }}
+          >
+            Please create a project
           </p>
         )}
       </div>

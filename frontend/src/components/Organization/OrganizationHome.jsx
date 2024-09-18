@@ -7,6 +7,7 @@ import { supabase } from "../../supabaseClient";
 import axios from "axios";
 import { InfinitySpin } from "react-loader-spinner";
 import "./OrganizationHome.css";
+import { usePageContext } from "../Contexts/PageContext";
 
 const OrganizationHome = () => {
   const [projects, setProjects] = useState([]);
@@ -19,6 +20,8 @@ const OrganizationHome = () => {
 
   const { selectedOrganization, setSelectedOrganization } = useOrganization();
   const { selectedProject, setSelectedProject } = useProjectContext();
+
+  const { page, setPage } = usePageContext();
 
   useEffect(() => {
 
@@ -274,7 +277,7 @@ const OrganizationHome = () => {
         <div className="org-overview">
           <div className="org-tools">
             <ul>
-              <li className="kanban-option">Kanban</li>
+              <li className="kanban-option" style={{cursor:"pointer"}} onClick={()=>{setPage('Notes')}}>Kanban</li>
               <li className="todo-option">Todo</li>
               <li className="whiteboard-option">Whiteboard</li>
             </ul>

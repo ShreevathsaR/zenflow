@@ -50,7 +50,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   useEffect(() => {
     const fetchUsername = async () => {
       setLoading(true);
-      const { data, error } = await supabase.auth.getSession();
+      const { data } = await supabase.auth.getSession();
 
       if (data) {
         const currentUserId = data.session.user.id;

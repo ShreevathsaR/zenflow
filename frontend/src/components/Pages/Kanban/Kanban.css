@@ -142,14 +142,3 @@
     /* position: absolute; */
     overflow-x: auto;
 }
-
-.task-details-modal-content{
-    background-color: #141f29;
-    color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 100%;
-    max-width: 400px;
-    position: relative;
-}

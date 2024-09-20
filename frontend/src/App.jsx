@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Header from "./components/Header/Header";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Page from "./components/Pages/Page";
 import { PageContextProvider } from "./components/Contexts/PageContext";

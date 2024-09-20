@@ -6,10 +6,14 @@ import { useProjectContext } from "../../Contexts/ProjectContext";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import "./Kanban.css";
 import axios from "axios";
+import TaskDetails from "./TaskDetails";
 
 const Kanban = ({ value }) => {
   const [sections, setSections] = useState([]);
   const [tasks, setTasks] = useState([]);
+
+  const [showTaskDetails, setShowTaskDetails] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const {
     selectedBoard,
@@ -328,6 +332,12 @@ const Kanban = ({ value }) => {
     }
   };
 
+  const handleShowTaskDetails = (task) => {
+    setSelectedTask(task);
+    console.log(task)
+    setShowTaskDetails(true);
+  };
+
   return (
     <div className="kanban-board-container">
       {selectedProject && (
@@ -387,6 +397,7 @@ const Kanban = ({ value }) => {
                                             cursor: "grab",
                                             ...provided.draggableProps.style,
                                           }}
+                                          onClick={() => handleShowTaskDetails(task)}
                                         >
                                           {task.name}
                                         </li>
@@ -419,6 +430,27 @@ const Kanban = ({ value }) => {
             }}
           </Droppable>
         </DragDropContext>
+      )}
+      {showTaskDetails && (
+        <div className="task-details">
+          <div className="modal-overlay">
+              <div className="details-modal-content">
+                <div className="modal-header">
+                  {/* <h2>{selectedTask.name}</h2> */}
+                  <TaskDetails value={{selectedTask, setSelectedTask}} />
+                  <button
+                    style={{color:"white"}}
+                    onClick={() => {
+                      setShowTaskDetails(false);
+                    }}
+                    className="close-button"
+                  >
+                    &times;
+                  </button>
+                </div>
+              </div>
+            </div>
+        </div>
       )}
     </div>
   );

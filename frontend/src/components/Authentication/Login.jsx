@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import "./Login.css";
 import { signInWithGoogle, supabase } from "../../supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { InfinitySpin } from "react-loader-spinner";
 import GoogleButton from 'react-google-button'
 

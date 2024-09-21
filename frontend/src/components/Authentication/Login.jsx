@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import "./Login.css";
-import { supabase } from "../../supabaseClient";
+import { signInWithGoogle, supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { InfinitySpin } from "react-loader-spinner";
+import GoogleButton from 'react-google-button'
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -59,6 +60,9 @@ const LoginPage = () => {
       <div className="login-container">
         <div className="login-card">
           <h2>Login</h2>
+          <div style={{justifyContent:"center", display:"flex"}}>
+            <GoogleButton onClick={signInWithGoogle} >Sign-In With Google</GoogleButton>
+          </div>
           {error && <p className="error-message">{error}</p>}
           <form className="login-form" onSubmit={handleLogin}>
             <div className="input-group">

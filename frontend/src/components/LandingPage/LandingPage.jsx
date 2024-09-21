@@ -38,10 +38,8 @@ const LandingPage = () => {
         </ul>
         <div className="nav-auth-buttons">
           <button
-            className="nav-button"
-            onClick={() => (window.location.href = "/login")}
-          >
-            Login
+            className="nav-button">
+            <Link to="/login">Login</Link>
           </button>
           <button className="nav-button">
             <Link to="/signup">Sign Up</Link>

@@ -357,6 +357,11 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               </SkeletonTheme>
             </div>
           )}
+          {!loading && !organizations.length && (
+            <li style={{ justifyContent: "center", fontSize: "0.9rem" }}>
+              Create an Organization
+            </li>
+          )}
           {!loading && showOrganizations && (
             <ul className="organization-list">
               {organizations.map((org, index) => {
@@ -483,6 +488,11 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                 </p>
               </SkeletonTheme>
             </div>
+          )}
+          {!loading && organizations.length && !projects.length && (
+            <li style={{ justifyContent: "center", fontSize: "0.9rem" }}>
+              Create a Project
+            </li>
           )}
           {!loading && showProjects && (
             <ul

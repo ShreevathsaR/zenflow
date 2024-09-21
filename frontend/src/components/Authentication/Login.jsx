@@ -41,6 +41,10 @@ const LoginPage = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    await signInWithGoogle(navigate);
+  }
+ 
   return (
     <div className="login-page">
       {loading && (
@@ -61,7 +65,7 @@ const LoginPage = () => {
         <div className="login-card">
           <h2>Login</h2>
           <div style={{justifyContent:"center", display:"flex"}}>
-            <GoogleButton onClick={signInWithGoogle} >Sign-In With Google</GoogleButton>
+            <GoogleButton onClick={handleGoogleSignIn} >Sign-In With Google</GoogleButton>
           </div>
           {error && <p className="error-message">{error}</p>}
           <form className="login-form" onSubmit={handleLogin}>

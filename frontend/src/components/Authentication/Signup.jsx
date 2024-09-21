@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Signup.css";
 import { signInWithGoogle, supabase } from "../../supabaseClient";
 import GoogleButton from "react-google-button";
@@ -9,6 +9,8 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState(null);
+
+  const navigate =  useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -43,13 +45,17 @@ function Signup() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    await signInWithGoogle(navigate);
+  }
+
   return (
     <div className="signup-page">
       <div className="signup-container">
         <div className="signup-card">
           <h1 className="signup-title">Sign Up</h1>
           <div style={{ justifyContent: "center", display: "flex" }}>
-            <GoogleButton onClick={signInWithGoogle}>
+            <GoogleButton onClick={handleGoogleSignIn}>
               Sign-In With Google
             </GoogleButton>
           </div>

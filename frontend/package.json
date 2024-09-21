@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@mui/material": "^5.16.7",
+    "@mui/styled-engine": "^6.1.1",
     "@supabase/supabase-js": "^2.45.0",
     "axios": "^1.7.2",
     "lodash": "^4.17.21",

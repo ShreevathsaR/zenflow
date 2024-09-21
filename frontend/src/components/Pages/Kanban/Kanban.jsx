@@ -81,7 +81,7 @@ const Kanban = ({ value }) => {
 
     if (!sectionTitle) return;
 
-    const response = await axios.post("http://localhost:8000/insertSections", {
+    const response = await axios.post("https://zenflow-kclv.onrender.com/insertSections", {
       board_id: selectedBoardId,
       name: sectionTitle,
       position: maxPosition + 1,

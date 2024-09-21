@@ -39,7 +39,7 @@ const KanbanHome = () => {
   const fetchOrganizations = async () => {
     const userId = localStorage.getItem("currentUserId");
 
-    const response = await axios.get("http://localhost:8000/organizations", {
+    const response = await axios.get("https://zenflow-kclv.onrender.com/organizations", {
       params: { id: userId },
     });
     const organizationsData = response.data;

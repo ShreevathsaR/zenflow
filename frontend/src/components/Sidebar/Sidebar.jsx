@@ -106,7 +106,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     // console.log(org_id);
 
     const response = await axios
-      .get(`http://localhost:8000/projects/${org_id}`)
+      .get(`https://zenflow-kclv.onrender.com/projects/${org_id}`)
       .catch((error) => {
         console.log(error);
       });
@@ -129,7 +129,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const fetchOrganizations = async () => {
     const id = localStorage.getItem("currentUserId");
 
-    const response = await axios.get("http://localhost:8000/organizations", {
+    const response = await axios.get("https://zenflow-kclv.onrender.com/organizations", {
       params: { id: id },
     });
     const organizationsData = response.data;
@@ -156,7 +156,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     console.log(name, id);
     setShowAddOrgModal(false);
     try {
-      await axios.post("http://localhost:8000/organizations/create", {
+      await axios.post("https://zenflow-kclv.onrender.com/organizations/create", {
         name: name,
         owner_id: id,
       });
@@ -215,7 +215,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     console.log(selectedOrgId);
     e.preventDefault();
     console.log(projectName, projectDesc);
-    const data = await axios.post("http://localhost:8000/projects/create", {
+    const data = await axios.post("https://zenflow-kclv.onrender.com/projects/create", {
       name: projectName,
       description: projectDesc,
       organization_id: selectedOrgId,

@@ -52,7 +52,7 @@ const OrganizationHome = () => {
       const org_id = fetchedOrgId.data.id;
 
       const response = await axios
-        .get(`https://zenflow-notes.netlify.app/projects/${org_id}`)
+        .get(`https://zenflow-kclv.onrender.com/projects/${org_id}`)
         .catch((error) => {
           console.log(error);
         });

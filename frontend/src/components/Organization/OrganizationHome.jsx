@@ -99,7 +99,7 @@ const OrganizationHome = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8000/organization/users/${org_id}`
+        `https://zenflow-kclv.onrender.com/organization/users/${org_id}`
       );
       console.log("Fetched users:", response.data);
 
@@ -146,6 +146,7 @@ const OrganizationHome = () => {
     try {
 
       const { data, error } = await supabase.from('profiles').select('id').eq('email', collaboratorEmail).single();
+      console.log("Add user data",data);
       const collabUserId = data.id;
 
       const fetchedOrgId = await supabase

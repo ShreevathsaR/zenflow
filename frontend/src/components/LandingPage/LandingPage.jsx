@@ -53,7 +53,7 @@ const LandingPage = () => {
           Your Collaborative Workspace for Seamless Teamwork
         </p>
         <button className="get-started-btn">
-          <Link to="/signup" style={{ textDecoration: "none", color: "white" }}>
+          <Link to="/signup" className="get-started" style={{ textDecoration: "none" }}>
             Get Started
           </Link>
         </button>

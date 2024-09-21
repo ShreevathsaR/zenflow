@@ -90,7 +90,7 @@ const LoginPage = () => {
             </button>
           </form>
           <p className="login-link">
-            Don't have an account? <Link href="/signup">Sign Up</Link>
+            Don't have an account? <Link to="/signup">Sign Up</Link>
           </p>
         </div>
       </div>

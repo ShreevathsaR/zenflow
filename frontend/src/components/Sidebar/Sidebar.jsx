@@ -288,7 +288,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
           </div>
         )}
         <img
-        style={width:"30px", height:"30px", borderRadius:"15px"}
+        style={{width:"30px", height:"30px", borderRadius:"15px"}}
           src={userAvatar}
           onClick={() => {
             setLogout(true);

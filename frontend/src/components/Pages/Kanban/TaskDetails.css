@@ -46,6 +46,43 @@
     height:22px;
 }
 
+.assign-modal{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: #21384c;
+    opacity: 1;
+    width: 15rem;
+    position: absolute;
+    z-index: 3;
+}
+
+.assign-header-section{
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.assign-modal h3{
+    font-size: 1rem;
+}
+
+.assign-modal-button{
+    background-color: #141f29;
+    color: white;
+    border: none;
+    width: 50%;
+    height: 2rem;
+    border-radius: 5px;
+    align-self: center;
+
+    &:hover{
+        border: 1px solid white;
+    }
+}
+
 /* .task-avatars div{
     font-size: x-small;
 } */

@@ -18,6 +18,7 @@ import { useProjectContext } from "../Contexts/ProjectContext";
 
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useOrgIdStore } from "../Contexts/OrgIdStore";
 
 const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const navigate = useNavigate();
@@ -35,7 +36,8 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
 
   const [organizationName, setOrganizationName] = useState("");
-  const [selectedOrgId, setSelectedOrgId] = useState(null);
+  const selectedOrgId = useOrgIdStore((state) => state.selectedOrgId);
+  const setSelectedOrgId = useOrgIdStore((state) => state.setSelectedOrgId); 
 
   const [projectName, setProjectName] = useState("");
   const [projectDesc, setProjectDesc] = useState("");

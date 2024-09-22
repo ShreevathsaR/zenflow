@@ -16,7 +16,11 @@ const TaskDetails = ({ value }) => {
 
   const [taskSectionName, setTaskSectionName] = useState(null);
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assignedTo, setAssignedTo] = useState(null);
+
   const selectedOrgId = useOrgIdStore((state) => state.selectedOrgId);
+
+  const [selectedCollaborator, setSelectedCollaborator] = useState(null);
 
   const [taskCollaborators, setTaskCollaborators] = useState([]);
 
@@ -64,7 +68,8 @@ const TaskDetails = ({ value }) => {
 
   useEffect(() => {
     selectedOrgId && getCollaborators(selectedOrgId);
-    selectedTask && getTaskDetails();
+    selectedTask && getTaskDetails() , getAssigneeData();
+
   }, []);
 
   const getTaskDetails = async () => {
@@ -99,47 +104,89 @@ const TaskDetails = ({ value }) => {
 
   const getCollaborators = async (selectedOrgId) => {
     try {
+      // Fetch user IDs related to the organization
       const { data: userOrgdata, error: userOrgError } = await supabase
         .from("userorganizations")
         .select("user_id")
         .eq("organization_id", selectedOrgId);
-
+  
       if (userOrgError) {
         console.log("Error fetching organization: ", userOrgError);
         return;
       }
-
-      const response = await Promise.all(
-        userOrgdata.map(async (collaboratorsData) => {
-          // return console.log("User id's",collaboratorsData.user_id)
-          const { data, error } = await supabase
-            .from("profiles")
-            .select("full_name")
-            .eq("id", collaboratorsData.user_id);
-
-          if (error) {
-            console.log("Error fetching collaborators: ", error);
-            return null;
-          }
-
-          let collaboratorNames;
-
-          if (data) {
-            collaboratorNames = data.map((collaborator) => {
-              return {
-                value: collaborator.full_name.toLowerCase(),
-                label: collaborator.full_name,
-              };
-            });
-            setTaskCollaborators(collaboratorNames);
-            console.log("Collaborators", collaboratorNames);
-          }
-        })
-      );
+  
+      // Fetch collaborators (profiles) for all user IDs in parallel
+      const userIds = userOrgdata.map((collaborator) => collaborator.user_id);
+      
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("full_name, id")
+        .in("id", userIds); // Fetch all profiles for the user IDs
+  
+      if (profileError) {
+        console.log("Error fetching collaborators: ", profileError);
+        return;
+      }
+  
+      // Map over the profiles and create the desired structure
+      const collaborators = profileData.map((collaborator) => ({
+        value: collaborator.full_name.toLowerCase(),
+        label: collaborator.full_name,
+        userId: collaborator.id,
+      }));
+  
+      console.log("Collaborators", collaborators);
+      setTaskCollaborators(collaborators); // Update the state with the collaborators
     } catch (error) {
       console.error(error);
     }
   };
+  
+
+  const handleChange = (selectedOption) => {
+    setSelectedCollaborator(selectedOption);
+    console.log("Selected Collaborator:", selectedOption);
+  };
+
+  const handleTaskAssignment = async (e) => {
+    e.preventDefault();
+
+    const { data, error } = await supabase
+      .from("tasks")
+      .update({
+        assigned_to: selectedCollaborator.userId,
+      })
+      .eq("id", selectedTask.id);
+
+    if (error) {
+      console.log("Error updating", error);
+    } else {
+      console.log("update successfull", data);
+      setAssignedTo(selectedCollaborator.label);
+      setShowAssignModal(false);
+      getAssigneeData();
+    }
+  };
+
+  const getAssigneeData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .select("assigned_to")
+        .eq("id", selectedTask.id);
+
+      if (data) {
+        const assignedUserId = data[0].assigned_to
+        const { data: assigneeName, error } = await supabase.from("profiles").select("full_name, id").eq("id", assignedUserId);
+        console.log(assigneeName[0].full_name);
+        setAssignedTo(assigneeName[0].full_name);
+      }
+
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div className="task-details-wrapper">
@@ -176,7 +223,7 @@ const TaskDetails = ({ value }) => {
       </div>
       <div className="task-details-right">
         <div className="task-avatars">
-          <AvatarGroup
+          {/* <AvatarGroup
             max={4}
             spacing={4}
             sx={{
@@ -213,7 +260,9 @@ const TaskDetails = ({ value }) => {
               src="/avatars/avatar-3.jpg"
               sx={{ width: 30, height: 30 }}
             />
-          </AvatarGroup>
+          </AvatarGroup> */}
+          <p>Assigned to:</p>
+          {assignedTo}
         </div>
         <ul
           style={{
@@ -251,9 +300,16 @@ const TaskDetails = ({ value }) => {
                 components={{ SingleValue }} // Use custom SingleValue component
                 isSearchable // Enables searching within the options
                 name="color"
-                options={taskCollaborators ? taskCollaborators : 'No options'} // Pass options to the select dropdown
+                value={selectedCollaborator}
+                options={taskCollaborators.length > 0 ? taskCollaborators : "No options"}
+                onChange={handleChange} // Pass options to the select dropdown
               />
-              <button className="assign-modal-button">Assign</button>
+              <button
+                className="assign-modal-button"
+                onClick={handleTaskAssignment}
+              >
+                Assign
+              </button>
             </div>
           )}
           <li className="task-detail-options">

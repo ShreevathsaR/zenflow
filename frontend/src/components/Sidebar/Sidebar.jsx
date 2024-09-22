@@ -25,6 +25,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   // console.log(setShowSideBar);
 
   const [username, setUsername] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
 
   const [projects, setProjects] = useState([]);
   const [showProjects, setShowProjects] = useState(true);
@@ -37,7 +38,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
   const [organizationName, setOrganizationName] = useState("");
   const selectedOrgId = useOrgIdStore((state) => state.selectedOrgId);
-  const setSelectedOrgId = useOrgIdStore((state) => state.setSelectedOrgId); 
+  const setSelectedOrgId = useOrgIdStore((state) => state.setSelectedOrgId);
 
   const [projectName, setProjectName] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
@@ -60,10 +61,11 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
         const username = await supabase
           .from("profiles")
-          .select("full_name")
+          .select("full_name, avatar_url")
           .eq("id", currentUserId);
 
         setUsername(username.data[0].full_name);
+        setUserAvatar(username.data[0].avatar_url);
         setLoading(false);
       } else {
         console.log("User is not logged in");
@@ -131,9 +133,12 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const fetchOrganizations = async () => {
     const id = localStorage.getItem("currentUserId");
 
-    const response = await axios.get("https://zenflow-kclv.onrender.com/organizations", {
-      params: { id: id },
-    });
+    const response = await axios.get(
+      "https://zenflow-kclv.onrender.com/organizations",
+      {
+        params: { id: id },
+      }
+    );
     const organizationsData = response.data;
     const fetchedOrganizations = organizationsData.map((organization) => {
       return organization.name;
@@ -158,10 +163,13 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     console.log(name, id);
     setShowAddOrgModal(false);
     try {
-      await axios.post("https://zenflow-kclv.onrender.com/organizations/create", {
-        name: name,
-        owner_id: id,
-      });
+      await axios.post(
+        "https://zenflow-kclv.onrender.com/organizations/create",
+        {
+          name: name,
+          owner_id: id,
+        }
+      );
       console.log(`${name} Organization created!!`);
     } catch (err) {
       console.log(err);
@@ -217,11 +225,14 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     console.log(selectedOrgId);
     e.preventDefault();
     console.log(projectName, projectDesc);
-    const data = await axios.post("https://zenflow-kclv.onrender.com/projects/create", {
-      name: projectName,
-      description: projectDesc,
-      organization_id: selectedOrgId,
-    });
+    const data = await axios.post(
+      "https://zenflow-kclv.onrender.com/projects/create",
+      {
+        name: projectName,
+        description: projectDesc,
+        organization_id: selectedOrgId,
+      }
+    );
     console.log(data);
     fetchProjects();
     setShowAddProjectModal(false);
@@ -230,11 +241,13 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   return (
     <div className={`sidebar ${showSideBar ? "" : "closed"}`}>
       <div className="profile-section">
-        <FaUserCircle
-          onClick={() => {
-            setLogout(true);
-          }}
-        />
+        {!userAvatar && (
+          <FaUserCircle
+            onClick={() => {
+              setLogout(true);
+            }}
+          />
+        )}
         {logout && (
           <div className="modal-overlay">
             <div className="modal-content">
@@ -274,6 +287,12 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
             </div>
           </div>
         )}
+        <img
+          src={userAvatar}
+          onClick={() => {
+            setLogout(true);
+          }}
+        />
         <div className="sidebar-username">{username}</div>
         <div className="notifications">
           <IoNotifications />

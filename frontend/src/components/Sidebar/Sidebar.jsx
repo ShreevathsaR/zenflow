@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Sidebar.css";
-import { FaUserCircle } from "react-icons/fa";
+import { FaChevronLeft, FaUserCircle } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
 import { usePageContext } from "../Contexts/PageContext";
 import { MdDashboard } from "react-icons/md";
@@ -42,6 +42,8 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
   const [projectName, setProjectName] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
+
+  const [showAllOrgs, setShowAllOrgs] = useState(false);
 
   const [logout, setLogout] = useState(false);
 
@@ -238,6 +240,10 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     setShowAddProjectModal(false);
   };
 
+  const handleShowAllOrgs = () => {
+    setShowAllOrgs((prev) => !prev);
+  };
+
   return (
     <div className={`sidebar ${showSideBar ? "" : "closed"}`}>
       <div className="profile-section">
@@ -294,10 +300,26 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
             setLogout(true);
           }}
         />
-        <div className="sidebar-username">{username}</div>
+        <div className="sidebar-username">{selectedOrganization}</div>
         <div className="notifications">
-          <IoNotifications />
+          <FaChevronDown onClick={handleShowAllOrgs} />
         </div>
+        {showAllOrgs && (
+          <div className="all-organizations" style={{position:"absolute"}}>
+            {organizations.map((org,index) => {
+              return (
+                <div key={index}
+                  className="organization-item"
+                  onClick={() => {
+                    handleClickOnOrganization(org);
+                  }}
+                >
+                  {org}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
       <div className="sidebar-options">
         <ul>
@@ -516,6 +538,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               Create a Project
             </li>
           )}
+          
           {!loading && showProjects && (
             <ul
               style={{
@@ -540,7 +563,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                       handleClickOnProject(project);
                     }}
                   >
-                    {project}
+                    {project ? project : ""}
                   </li>
                 );
               })}

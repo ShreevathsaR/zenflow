@@ -266,6 +266,43 @@
   backdrop-filter: brightness(1.75);
 }
 
+.organization-options{
+  /* padding-left: 1rem;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem; */
+  width: 13rem;
+  margin-top: 8.5%;
+  margin-left: 12%;
+  border-radius: 7px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  background-color: #043d57;
+  position: absolute;
+}
+
+.organization-options h3{
+  text-align: center;
+  padding: 0.8rem;
+}
+
+.organization-li{
+  padding-left: 0.5rem;
+  height: 3rem;
+  /* border-bottom: 2px solid black;
+  border-bottom-style: groove; */
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  padding-right: 0.5rem;
+  color: #E0E0E0;
+  opacity: 1;
+
+  &:hover{
+    backdrop-filter: brightness(1.3);
+  }
+}
+
 @media only screen and (max-width: 768px) {
   .sidebar {
     width: 80%;

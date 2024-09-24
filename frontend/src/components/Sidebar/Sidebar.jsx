@@ -294,7 +294,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
           </div>
         )}
         <img
-        style={{width:"30px", height:"30px", borderRadius:"15px"}}
+          style={{ width: "30px", height: "30px", borderRadius: "15px" }}
           src={userAvatar}
           onClick={() => {
             setLogout(true);
@@ -305,11 +305,28 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
           <FaChevronDown onClick={handleShowAllOrgs} />
         </div>
         {showAllOrgs && (
-          <div className="all-organizations" style={{position:"absolute"}}>
-            {organizations.map((org,index) => {
+          <div className="organization-options">
+            <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between" }}>
+              <h3 style={{ backgroundColor: "transparent" }}>Organizations</h3>
+              <IoMdAdd
+                className="add-organization-btn"
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  paddingRight: "0.5rem",
+                  cursor:"pointer"
+                }}
+                onClick={() => {
+                  addOrganization();
+                }}
+              />
+            </div>
+            <hr style={{ opacity: "0.5" }} />
+            {organizations.map((org, index) => {
               return (
-                <div key={index}
-                  className="organization-item"
+                <div
+                  key={index}
+                  className="organization-li"
                   onClick={() => {
                     handleClickOnOrganization(org);
                   }}
@@ -350,13 +367,12 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               Whiteboard
             </li>
           </div>
-          <li className="organizations-section">
+          {/* <li className="organizations-section">
             <div
               onClick={() => {
                 toggleOrganizations();
               }}
             >
-              {/* <RiTeamFill style={{ paddingRight: "0.4rem" }} /> */}
               Organizations
             </div>
             <div
@@ -390,8 +406,8 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                 />
               )}
             </div>
-          </li>
-          {loading && (
+          </li> */}
+          {/* {loading && (
             <div style={{ width: "90%", margin: "auto" }}>
               <SkeletonTheme baseColor="#ffffff21" highlightColor="#ffffff25">
                 <p>
@@ -426,7 +442,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                 );
               })}
             </ul>
-          )}
+          )} */}
 
           {showAddOrgModal && (
             <div className="modal-overlay">
@@ -538,7 +554,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               Create a Project
             </li>
           )}
-          
+
           {!loading && showProjects && (
             <ul
               style={{

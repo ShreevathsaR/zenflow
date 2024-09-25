@@ -59,7 +59,7 @@ const Page = () => {
           console.error('Error inserting profile:', insertError.message);
         } else {
           console.log('Profile created successfully');
-          window.location.reload();
+          navigate('/onboard');
         }
       } else {
         console.log('User already exists, skipping insertion');

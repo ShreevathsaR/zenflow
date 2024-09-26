@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Sidebar.css";
 import { FaChevronLeft, FaUserCircle } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
@@ -26,6 +26,8 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
 
   const [username, setUsername] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
+
+  const orgOptionsRef = useRef(null);
 
   const [projects, setProjects] = useState([]);
   const [showProjects, setShowProjects] = useState(true);
@@ -86,6 +88,21 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       fetchProjects();
     }
   }, [selectedOrganization]);
+
+  const handleClickOutside = (e) => {
+    if (orgOptionsRef.current && !orgOptionsRef.current.contains(e.target)) {
+      setShowAllOrgs(false);
+    }
+  };
+
+  useEffect(()=>{
+    if (showAllOrgs) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  },[showAllOrgs])
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -217,6 +234,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const handleClickOnOrganization = (org) => {
     setSelectedOrganization(org);
     setPage("OrganizationHome");
+    setShowAllOrgs(false);
   };
 
   const handleClickOnProject = (project) => {
@@ -305,7 +323,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
           <FaChevronDown onClick={handleShowAllOrgs} />
         </div>
         {showAllOrgs && (
-          <div className="organization-options">
+          <div className="organization-options" ref={orgOptionsRef}>
             <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between" }}>
               <h3 style={{ backgroundColor: "transparent" }}>Organizations</h3>
               <IoMdAdd
@@ -326,7 +344,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               return (
                 <div
                   key={index}
-                  className="organization-li"
+                  className={selectedOrganization === org ? 'selected-organization' : 'organization-li'}
                   onClick={() => {
                     handleClickOnOrganization(org);
                   }}

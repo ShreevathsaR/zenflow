@@ -253,8 +253,9 @@
 }
 
 .selected-organization {
-  border-radius: 5px;
+  /* border-radius: 5px; */
   backdrop-filter: brightness(1.8);
+  padding: 0.7rem;
 }
 
 .selected-project {
@@ -271,8 +272,8 @@
   padding-top: 0.3rem;
   padding-bottom: 0.3rem; */
   width: 13rem;
-  margin-top: 8.5%;
-  margin-left: 12%;
+  top: 7%;
+  left: 13%;
   border-radius: 7px;
   z-index: 3;
   display: flex;

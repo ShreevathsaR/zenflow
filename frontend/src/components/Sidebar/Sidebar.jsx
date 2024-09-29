@@ -27,6 +27,8 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const [username, setUsername] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
 
+  const [associatedOrganizations, setAssociatedOrganizations] = useState([]);
+
   const orgOptionsRef = useRef(null);
 
   const [projects, setProjects] = useState([]);
@@ -95,14 +97,14 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     if (showAllOrgs) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  },[showAllOrgs])
+  }, [showAllOrgs]);
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -150,16 +152,59 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   };
 
   const fetchOrganizations = async () => {
-    const id = localStorage.getItem("currentUserId");
+    const userId = localStorage.getItem("currentUserId");
 
     const response = await axios.get(
       "https://zenflow-kclv.onrender.com/organizations",
       {
-        params: { id: id },
+        params: { id: userId },
       }
     );
-    const organizationsData = response.data;
-    const fetchedOrganizations = organizationsData.map((organization) => {
+
+    try {
+      const { data, error } = await supabase
+        .from("userorganizations")
+        .select("*")
+        .eq("user_id", userId);
+      console.log("associated orgs", data);
+
+      const associatedOrganizationsData = await Promise.all(
+        data.map(async(org1) => {
+          const {data: associatedOrgNames, error} = await supabase.from('organizations').select('*').eq("id", org1.organization_id);
+
+          if(associatedOrgNames){
+            console.log('associated org names',associatedOrgNames);
+
+            const orgData = associatedOrgNames.map((org) => {
+              return {"sec_id":org.id,"org_name": org.name, "org_owner": org.owner_id, "org_user_role": org1.role };
+            });
+            return orgData;
+          }
+
+          if(error){
+            console.log(error);
+            return
+          }
+        })
+
+      )
+
+      console.log(associatedOrganizationsData)
+
+      let flattenedOrgNames = associatedOrganizationsData
+      .flat()
+      .map((org) => org); // Extract just the name property
+
+    console.log(flattenedOrgNames);
+
+
+      setAssociatedOrganizations(flattenedOrgNames);
+    } catch (error) {
+      console.log(error);
+    }
+
+    const ownOrganizationsData = response.data;
+    const fetchedOrganizations = ownOrganizationsData.map((organization) => {
       return organization.name;
     });
 
@@ -324,7 +369,16 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
         </div>
         {showAllOrgs && (
           <div className="organization-options" ref={orgOptionsRef}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                backgroundColor: "#04151e",
+                borderTopLeftRadius: "7px",
+                borderTopRightRadius: "7px",
+              }}
+            >
               <h3 style={{ backgroundColor: "transparent" }}>Organizations</h3>
               <IoMdAdd
                 className="add-organization-btn"
@@ -332,7 +386,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                   width: "24px",
                   height: "24px",
                   paddingRight: "0.5rem",
-                  cursor:"pointer"
+                  cursor: "pointer",
                 }}
                 onClick={() => {
                   addOrganization();
@@ -340,16 +394,43 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               />
             </div>
             <hr style={{ opacity: "0.5" }} />
+            {organizations.length === 0 && <div className="organization-li">Create one</div>}
             {organizations.map((org, index) => {
               return (
                 <div
-                  key={index}
-                  className={selectedOrganization === org ? 'selected-organization' : 'organization-li'}
-                  onClick={() => {
-                    handleClickOnOrganization(org);
-                  }}
+                key={index}
+                className={
+                  selectedOrganization === org
+                  ? "selected-organization"
+                  : "organization-li"
+                }
+                onClick={() => {
+                  handleClickOnOrganization(org);
+                }}
                 >
                   {org}
+                </div>
+              );
+            })}
+            <hr style={{"opacity": "0.5"}}/>
+            <h3 style={{backgroundColor:"#04151e", fontSize:"0.9rem", display:"flex"}}>Associated Organizations</h3>
+            {!associatedOrganizations.length && <div className="organization-li">No associated organizations</div>}
+            {associatedOrganizations.map((org, index) => {
+              return (
+                <div
+                  key={index}
+                  className={
+                    selectedOrganization === org
+                    ? "selected-organization"
+                    : "organization-li"
+                  }
+                  style={{display:"flex", flexDirection:"column", alignItems:"flex-start", justifyContent:"center"}}
+                  // onClick={() => {
+                  //   handleClickOnOrganization(org);
+                  // }}
+                >
+                  {org.org_name}
+                  <p style={{opacity:"0.5", fontSize:"small"}}>{org.org_user_role}</p>
                 </div>
               );
             })}

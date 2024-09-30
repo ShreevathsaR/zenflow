@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Sidebar.css";
-import { FaChevronLeft, FaUserCircle } from "react-icons/fa";
+import { FaChevronLeft, FaInbox, FaUserCircle } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
 import { usePageContext } from "../Contexts/PageContext";
 import { MdDashboard } from "react-icons/md";
@@ -260,8 +260,8 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     setPage("Notes");
   };
 
-  const handleTodo = () => {
-    setPage("Todo");
+  const handleInbox = () => {
+    setPage("Inbox");
   };
 
   const toggleProjects = () => {
@@ -445,6 +445,14 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               Home
             </li>
             <li
+              onClick={() => {
+                handleInbox();
+              }}
+            >
+              <FaInbox style={{ paddingRight: "0.4rem" }} />
+              Inbox
+            </li>
+            <li
               className={page === "Notes" ? "selected-overview" : ""}
               onClick={() => {
                 handleNotes();
@@ -452,14 +460,6 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
             >
               <MdViewKanban style={{ paddingRight: "0.4rem" }} />
               Kanban
-            </li>
-            <li
-              onClick={() => {
-                handleTodo();
-              }}
-            >
-              <RiTodoFill style={{ paddingRight: "0.4rem" }} />
-              Todo
             </li>
             <li>
               <BiChalkboard style={{ paddingRight: "0.4rem" }} />

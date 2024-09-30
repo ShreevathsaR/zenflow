@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "./Page.css";
-import Todo from "./Todo/Todo";
+import Inbox from "./Inbox/Inbox";
 import { usePageContext } from "../Contexts/PageContext";
 import OrganizationHome from "../Organization/OrganizationHome";
 import KanbanHome from "./Kanban/KanbanHome";
@@ -87,7 +87,7 @@ const Page = () => {
         </div>
       )}
       {page === "Notes" && <KanbanHome />}
-      {page === "Todo" && <Todo />}
+      {page === "Inbox" && <Inbox />}
       {page === "OrganizationHome" && <OrganizationHome />}
     </div>
   );

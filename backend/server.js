@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('./db');
 const app = express();
+const axios = require('axios');
 const cors = require('cors');
 
 app.use(cors());
@@ -75,6 +76,25 @@ app.post('/insertSections', async (req,res)=>{
         console.log(error)
     }
 })
+
+app.get('/', (req, res) => {
+    res.status(200).send('Server is running');
+  });
+
+const serverUrl = 'https://zenflow-kclv.onrender.com';
+
+const pingServer = () => {
+  axios.get(serverUrl)
+    .then(response => {
+      console.log('Ping successful:', response.status);
+    })
+    .catch(error => {
+      console.error('Ping failed:', error.message);
+    });
+};
+
+// Ping every 5 minutes (300,000 milliseconds)
+setInterval(pingServer, 300000);
 
 
 const PORT = 8000

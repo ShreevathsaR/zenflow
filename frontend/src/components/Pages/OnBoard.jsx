@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./OnBoard.css";
 import Select from "react-select";
+import { supabase } from "../../supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 const OnBoard = () => {
   const [onboardForm, setOnboardForm] = React.useState("form1");
+
+  const navigate = useNavigate();
+
+  const [userId, setUserId] = useState('')
+  const [userName, setUserName] = useState('')
 
   const [orgType, setOrgType] = React.useState(null);
   const [orgName, setOrgName] = React.useState("");
@@ -70,6 +77,23 @@ const OnBoard = () => {
     { value: "50001-100000", label: "50001-100000" },
   ];
 
+  useEffect(()=>{
+    getUser();
+  })
+
+  const getUser = async() => {
+    const {data,error} = await supabase.auth.getSession();
+    
+    if(data){
+      setUserId(data.session.user.id)
+      setUserName(data.session.user.user_metadata.full_name)
+    }
+
+    if (error) {
+      console.log(error)
+    }
+  }
+
   const customStyles = {
     control: (base) => ({
       ...base,
@@ -104,10 +128,30 @@ const OnBoard = () => {
     }),
   };
 
+  const handleOnBoardSubmit = async () =>{
+
+    const {data,error} = await supabase.from('organizations').insert({
+      name: orgName,
+      organization_industry: orgIndustry.label,
+      organization_location: orgLocation.label,
+      organization_type: orgType.label,
+      owner_id: userId
+    }).select()
+
+    if(data){
+      console.log(data)
+      navigate('/home')
+    }
+
+    if (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className="onboard-page">
       <div className="onboard-heading">
-        <h1>Welcome to Zenflow!</h1>
+        <h1>Welcome to Zenflow, {userName}!</h1>
         <h3 style={{ fontWeight: "400" }}>
           Let's get started by creating your organization.
         </h3>
@@ -214,7 +258,8 @@ const OnBoard = () => {
                 type="submit"
                 className="onboard-btn"
                 onClick={() => {
-                  console.log(orgName, orgType, orgIndustry, orgLocation, orgNoMembers);
+                  console.log(orgName, orgType.label, orgIndustry.label, orgLocation.label, orgNoMembers.label);
+                  handleOnBoardSubmit();
                 }}
               >
                 Next

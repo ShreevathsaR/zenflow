@@ -24,7 +24,7 @@ export const signInWithGoogle = async (navigate) => {
     }
 
     // Redirect or handle after profile insertion
-    navigate('/home'); // Example redirect, modify as needed
+    // navigate('/home'); // Example redirect, modify as needed
   } catch (err) {
     console.error('Error during Google sign-in:', err);
   }
@@ -49,6 +49,7 @@ const insertProfile = async (user) => {
       console.error('Error inserting profile:', profileError.message);
     } else {
       console.log('Profile created successfully');
+      // navigate('/onboard');
     }
   } catch (error) {
     console.error('Error during profile insertion:', error);

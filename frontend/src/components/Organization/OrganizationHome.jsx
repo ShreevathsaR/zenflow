@@ -8,6 +8,8 @@ import axios from "axios";
 import { InfinitySpin } from "react-loader-spinner";
 import "./OrganizationHome.css";
 import { usePageContext } from "../Contexts/PageContext";
+import { useOrgIdStore } from "../Contexts/OrgIdStore";
+import Swal from 'sweetalert2'
 
 const OrganizationHome = () => {
   const [projects, setProjects] = useState([]);
@@ -19,21 +21,21 @@ const OrganizationHome = () => {
   const [addUsersModal, setAddUsersModal] = useState(false);
 
   const { selectedOrganization, setSelectedOrganization } = useOrganization();
+  const { selectedOrgId, setSelectedOrgId } = useOrgIdStore();
+
   const { selectedProject, setSelectedProject } = useProjectContext();
 
   const { page, setPage } = usePageContext();
 
   useEffect(() => {
-
     const getSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
-        console.log(data)
-
+        console.log(data);
       } catch (error) {
         console.log(error.message);
       }
-    }
+    };
 
     const fetchProjects = async () => {
       setLoading(true);
@@ -139,14 +141,17 @@ const OrganizationHome = () => {
 
   const AddUser = async (e) => {
     setLoading(true);
-    setAddUsersModal(false)
+    setAddUsersModal(false);
     e.preventDefault();
     console.log("Add users", collaboratorEmail);
 
     try {
-
-      const { data, error } = await supabase.from('profiles').select('id').eq('email', collaboratorEmail).single();
-      console.log("Add user data",data);
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("email", collaboratorEmail)
+        .single();
+      console.log("Add user data", data);
       const collabUserId = data.id;
 
       const fetchedOrgId = await supabase
@@ -163,13 +168,15 @@ const OrganizationHome = () => {
       const org_id = fetchedOrgId.data.id;
 
       if (!collabUserId) {
-        console.log('User not found')
+        console.log("User not found");
         return;
       } else {
-        const { data, error } = await supabase.from('userorganizations').insert({
-          organization_id: org_id,
-          user_id: collabUserId
-        })
+        const { data, error } = await supabase
+          .from("userorganizations")
+          .insert({
+            organization_id: org_id,
+            user_id: collabUserId,
+          });
         console.log(error);
         setAddUsersModal(false);
         fetchedOrganizationUsers();
@@ -183,6 +190,51 @@ const OrganizationHome = () => {
 
     setAddUsersModal(false);
   };
+
+  const handleUserInvite = async (e) => {
+    e.preventDefault();
+    const collaboratorEmail = prompt("Enter collaborator's email:");
+    console.log(selectedOrganization);
+    console.log(selectedOrgId);
+
+    const {data:userData, error:userError} = await supabase.auth.getUser();
+
+    if(userError){
+      console.log(userError);
+      return
+    }
+    else{
+        const inviterName = userData.user.user_metadata.full_name;
+
+        const response = await axios.post('https://zenflow-kclv.onrender.com/invite',{
+          inviterName: inviterName,
+          organizationId: selectedOrgId,
+          email: collaboratorEmail,
+          organizationName: selectedOrganization
+        })
+
+        console.log(response.data.message.success);
+
+        if(response.data.message.success === true){
+          Swal.fire({
+            title: "Invite Sent!",
+            text: `Your invite to ${collaboratorEmail} was successful` ,
+            icon: "success"
+          });
+        }
+        else{
+          Swal.fire({
+            icon: "error",
+            title: "Invite was not sent",
+            text: "Something went wrong!",
+          });
+        }
+    }
+    
+
+  };
+
+  // const inviteUser
 
   return (
     <div className="orghome-container">
@@ -204,9 +256,7 @@ const OrganizationHome = () => {
             </h3>
             {loading && (
               <div className="modal-overlay">
-                <div
-                  className="spinner-container"
-                >
+                <div className="spinner-container">
                   <InfinitySpin
                     visible={true}
                     width="200"
@@ -263,22 +313,41 @@ const OrganizationHome = () => {
                 </div>
               </div>
             )}
-            {orgUsers.length===0 && (<p style={{opacity:"0.25", textAlign:"center", cursor:"default", paddingTop:"2rem"}}>No collaborators</p>)}
+            {orgUsers.length === 0 && (
+              <p
+                style={{
+                  opacity: "0.25",
+                  textAlign: "center",
+                  cursor: "default",
+                  paddingTop: "2rem",
+                }}
+              >
+                No collaborators
+              </p>
+            )}
             {orgUsers &&
               orgUsers.map((user, index) => {
                 return <li key={index}>{user}</li>;
               })}
           </ul>
-          <div className="invite-link">
-            Invite Links
-            <MdContentCopy />
+          <div className="invite-link" onClick={handleUserInvite}>
+            Invite
+            {/* <MdContentCopy /> */}
           </div>
         </div>
 
         <div className="org-overview">
           <div className="org-tools">
             <ul>
-              <li className="kanban-option" style={{cursor:"pointer"}} onClick={()=>{setPage('Notes')}}>Kanban</li>
+              <li
+                className="kanban-option"
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setPage("Notes");
+                }}
+              >
+                Kanban
+              </li>
               <li className="todo-option">Todo</li>
               <li className="whiteboard-option">Whiteboard</li>
             </ul>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Signup.css";
 import { signInWithGoogle, supabase } from "../../supabaseClient";
@@ -9,8 +9,15 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState(null);
+  const [orgId, setOrgId] = useState(null);
 
   const navigate =  useNavigate();
+
+  useEffect(()=>{
+    const orgId = sessionStorage.getItem("orgId")
+    setOrgId(orgId)
+    console.log(orgId);  
+  },[])
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -42,6 +49,24 @@ function Signup() {
     } else {
       setError("Confirm you email to login");
       console.log(data.user);
+      
+      if(orgId){
+        console.log('I am entering this from signup');
+        const { data:insertionData,error} = await supabase.from('userorganizations').insert({
+          user_id: data.user.id,
+          organization_id: orgId,
+          role: 'Member'
+        }).select();
+        
+        if (error) {
+          console.log(error);
+        }
+        
+        console.log('ADDing user to org ', insertionData);
+      }
+      
+      navigate('/onboard');
+
     }
   };
 

@@ -12,11 +12,19 @@ const OnBoard = () => {
   const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
 
+  const [orgId, setOrgId] = useState(null);
+
   const [orgType, setOrgType] = React.useState(null);
   const [orgName, setOrgName] = React.useState("");
   const [orgIndustry, setOrgIndustry] = React.useState("");
   const [orgLocation, setOrgLocation] = React.useState("");
   const [orgNoMembers, setOrgNoMembers] = React.useState("");
+
+  useEffect(()=>{
+    const org_id = sessionStorage.getItem("orgId")
+    setOrgId(org_id)
+    console.log(org_id);
+  })
 
   const orgTypeOptions = [
     { value: "individual", label: "Individual" },
@@ -129,6 +137,9 @@ const OnBoard = () => {
   };
 
   const handleOnBoardSubmit = async () =>{
+
+    console.log('Enter OnboardSubmit');
+    
 
     const {data,error} = await supabase.from('organizations').insert({
       name: orgName,

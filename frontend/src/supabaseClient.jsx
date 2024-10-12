@@ -48,7 +48,7 @@ const insertProfile = async (user) => {
     if (profileError) {
       console.error('Error inserting profile:', profileError.message);
     } else {
-      console.log('Profile created successfully');
+      console.log('Profile created successfully 1');
       // navigate('/onboard');
     }
   } catch (error) {

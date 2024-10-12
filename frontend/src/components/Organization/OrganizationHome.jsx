@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useProjectContext } from "../Contexts/ProjectContext";
 import { useOrganization } from "../Contexts/OrganizationContext";
-import { MdContentCopy } from "react-icons/md";
+import { MdCardMembership, MdContentCopy } from "react-icons/md";
 import { IoMdAdd } from "react-icons/io";
 import { supabase } from "../../supabaseClient";
 import axios from "axios";
@@ -9,14 +9,17 @@ import { InfinitySpin } from "react-loader-spinner";
 import "./OrganizationHome.css";
 import { usePageContext } from "../Contexts/PageContext";
 import { useOrgIdStore } from "../Contexts/OrgIdStore";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 
 const OrganizationHome = () => {
   const [projects, setProjects] = useState([]);
   const [orgUsers, setOrgUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [showInviteModal, setShowInviteModal] = useState(false);
+
   const [collaboratorEmail, setCollaboratorEmail] = useState("");
+  const [newCollaboratorEmail, setNewCollaboratorEmail] = useState("");
 
   const [addUsersModal, setAddUsersModal] = useState(false);
 
@@ -193,45 +196,84 @@ const OrganizationHome = () => {
 
   const handleUserInvite = async (e) => {
     e.preventDefault();
-    const collaboratorEmail = prompt("Enter collaborator's email:");
-    console.log(selectedOrganization);
-    console.log(selectedOrgId);
+    setShowInviteModal(false);
+    setLoading(true)
+    console.log('Collaborator Email', newCollaboratorEmail);
 
-    const {data:userData, error:userError} = await supabase.auth.getUser();
+    try {
+      const { data: userValidationData, error: userValidationError } = await supabase.from("profiles").select("*").eq("email", newCollaboratorEmail);
+      
+      if (userValidationError) {
+        console.log(userValidationError);
+        console.log('Data',userValidationData);
+        return;
+      }
 
-    if(userError){
-      console.log(userError);
-      return
+      if(userValidationData[0].email === newCollaboratorEmail){
+        Swal.fire({
+          icon: "error",
+          title: "User is already registered!",
+          text: `User with email ${newCollaboratorEmail} is already registered, add him as a collaborator.`,
+        });
+        setLoading(false);
+        return
+      }
+
+    } catch (error) {
+      console.log(error);
     }
-    else{
-        const inviterName = userData.user.user_metadata.full_name;
 
-        const response = await axios.post('https://zenflow-kclv.onrender.com/invite',{
-          inviterName: inviterName,
-          organizationId: selectedOrgId,
-          email: collaboratorEmail,
-          organizationName: selectedOrganization
-        })
 
-        console.log(response.data.message.success);
-
-        if(response.data.message.success === true){
-          Swal.fire({
-            title: "Invite Sent!",
-            text: `Your invite to ${collaboratorEmail} was successful` ,
-            icon: "success"
-          });
-        }
-        else{
-          Swal.fire({
-            icon: "error",
-            title: "Invite was not sent",
-            text: "Something went wrong!",
-          });
-        }
-    }
     
 
+    console.log(selectedOrgId);
+
+    const { data: userData, error: userError } = await supabase.auth.getSession();
+    
+    console.log(userData.session);
+
+    const userId = userData.session.user.id;
+
+    const { data: userName, error: userNameError } = await supabase.from('profiles').select('full_name').eq('id', userId).single();
+    
+    console.log(userName.full_name);
+    
+
+    if (userError) {
+      console.log(userError);
+      return;
+    } else {
+      const inviterName = userName.full_name;
+
+      const response = await axios.post(
+        "https://zenflow-kclv.onrender.com/invite",
+        {
+          inviterName: inviterName,
+          organizationId: selectedOrgId,
+          email: newCollaboratorEmail,
+          organizationName: selectedOrganization,
+        }
+      );
+      console.log(response);
+      
+      if (response.data.message.success === true) {
+        Swal.fire({
+          title: "Invite Sent!",
+          text: `Your invite to ${newCollaboratorEmail} was successful`,
+          icon: "success",
+        });
+        setLoading(false)
+        setNewCollaboratorEmail("");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Invite was not sent",
+          text: "Something went wrong!",
+        });
+        setLoading(false)
+        setNewCollaboratorEmail("");
+      }
+    }
   };
 
   // const inviteUser
@@ -330,10 +372,63 @@ const OrganizationHome = () => {
                 return <li key={index}>{user}</li>;
               })}
           </ul>
-          <div className="invite-link" onClick={handleUserInvite}>
-            Invite
-            {/* <MdContentCopy /> */}
+          <div
+            className="invite-link"
+            onClick={()=>{setShowInviteModal(true)}}
+            style={{ cursor: "pointer" }}
+          >
+            Invite members
+            <MdCardMembership />
           </div>
+          {showInviteModal && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <div style={{display:"flex", flexDirection:"column"}}>
+                  <h2 style={{ color: "black" }}>Invite Collaborators</h2>
+                  <p style={{ color: "black" }}>An invite link will be sent to this mail ID</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowInviteModal(false);
+                    }}
+                    className="close-button"
+                  >
+                    &times;
+                  </button>
+                </div>
+                <form onSubmit={handleUserInvite}>
+                  <div className="form-group">
+                    <label htmlFor="title" style={{ color: "black" }}>
+                      Enter User Email
+                    </label>
+                    <input
+                      type="text"
+                      id="title"
+                      className="input-field"
+                      placeholder="Enter email"
+                      onChange={(e) => setNewCollaboratorEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowInviteModal(false);
+                      }}
+                      className="cancel-button"
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="submit-button">
+                      Add
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="org-overview">

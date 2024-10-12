@@ -5,6 +5,7 @@ import Login from "./components/Authentication/Login";
 import Signup from "./components/Authentication/Signup";
 import ProtectedRoutes from "./components/Authentication/ProtectedRoutes";
 import OnBoard from "./components/Pages/OnBoard";
+import Invite from "./components/Pages/Invite";
 // import KanbanHome from "./components/Pages/Kanban/KanbanHome";
 
 function App1() {
@@ -16,6 +17,7 @@ function App1() {
         <Route path='/signup' element={<Signup/>}/>
         <Route path="/home" element={<ProtectedRoutes><App/></ProtectedRoutes>}/>
         <Route path="/onboard" element={<ProtectedRoutes><OnBoard/></ProtectedRoutes>}/>
+        <Route path="/invite" element={<Invite/>}/>
         {/* <Route path="/kanbanHome" element={<ProtectedRoutes><KanbanHome/></ProtectedRoutes>}/> */}
       </Routes>
     </Router>

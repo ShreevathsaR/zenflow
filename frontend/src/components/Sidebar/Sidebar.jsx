@@ -57,11 +57,14 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const { selectedProject, setSelectedProject } = useProjectContext();
 
   useEffect(() => {
+    
     const fetchUsername = async () => {
       setLoading(true);
       const { data, error } = await supabase.auth.getSession();
 
       if (data) {
+        console.log('Got the user data',data);
+        
         const currentUserId = data.session.user.id;
         localStorage.setItem("currentUserId", currentUserId);
 
@@ -69,6 +72,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
           .from("profiles")
           .select("full_name, avatar_url")
           .eq("id", currentUserId);
+          
 
         setUsername(username.data[0].full_name);
         setUserAvatar(username.data[0].avatar_url);
@@ -113,12 +117,16 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       console.error("No organization selected");
       return;
     }
+    
 
     const fetchedOrgId = await supabase
       .from("organizations")
       .select("id")
       .eq("name", selectedOrganization)
       .single();
+
+      console.log('data', fetchedOrgId);
+      
 
     if (!fetchedOrgId.data) {
       setLoading(false);
@@ -356,13 +364,13 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
             </div>
           </div>
         )}
-        <img
+        {userAvatar && <img
           style={{ width: "30px", height: "30px", borderRadius: "15px" }}
           src={userAvatar}
           onClick={() => {
             setLogout(true);
           }}
-        />
+        />}
         <div className="sidebar-username">{selectedOrganization}</div>
         <div className="notifications">
           <FaChevronDown onClick={handleShowAllOrgs} />

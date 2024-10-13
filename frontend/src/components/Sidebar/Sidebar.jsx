@@ -412,6 +412,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
                   ? "selected-organization"
                   : "organization-li"
                 }
+                style={{cursor:"pointer"}}
                 onClick={() => {
                   handleClickOnOrganization(org);
                 }}
@@ -426,13 +427,13 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
             {associatedOrganizations.map((org, index) => {
               return (
                 <div
-                  key={index}
-                  className={
-                    selectedOrganization === org
-                    ? "selected-organization"
-                    : "organization-li"
-                  }
-                  style={{display:"flex", flexDirection:"column", alignItems:"flex-start", justifyContent:"center"}}
+                key={index}
+                className={
+                  selectedOrganization === org
+                  ? "selected-organization"
+                  : "organization-li"
+                }
+                  style={{display:"flex", flexDirection:"column", alignItems:"flex-start", justifyContent:"center", cursor:"pointer"}}
                   // onClick={() => {
                   //   handleClickOnOrganization(org);
                   // }}

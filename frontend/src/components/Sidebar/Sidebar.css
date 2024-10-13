@@ -256,9 +256,11 @@
   /* border-radius: 5px; */
   backdrop-filter: brightness(1.8);
   padding: 0.7rem;
+  cursor: pointer;
 }
 
 .selected-project {
+  cursor: pointer;
   border-radius: 5px;  
   backdrop-filter: brightness(1.8);
 }
@@ -298,6 +300,7 @@
   padding-right: 0.5rem;
   color: #E0E0E0;
   opacity: 1;
+  cursor: pointer;
 
   &:hover{
     backdrop-filter: brightness(1.3);

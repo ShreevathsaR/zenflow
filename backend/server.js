@@ -55,6 +55,8 @@ app.get("/projects/:org_id", async (req, res) => {
 
 app.get("/organization/users/:org_id", async (req, res) => {
   const org_id = req.params.org_id;
+  console.log(org_id);
+  
   try {
     const users = await pool.query(
       "SELECT * FROM userorganizations WHERE organization_id = $1",

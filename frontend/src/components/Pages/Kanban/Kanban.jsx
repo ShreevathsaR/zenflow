@@ -15,6 +15,8 @@ const Kanban = ({ value }) => {
   const [showTaskDetails, setShowTaskDetails] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
+  const [creator,setCreator] = useState(null);
+
   const {
     selectedBoard,
     setSelectedBoard,
@@ -43,9 +45,26 @@ const Kanban = ({ value }) => {
     fetchBoardData();
     // fetchSections();
     fetchSectionsAndTasks();
-    // console.log(selectedBoard);
-    // console.log(selectedBoardId);
-    // console.log(value)
+
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(data);
+        
+        const {data:userData,error} = await supabase.from('profiles').select('id,full_name').eq('id',data.user.id).single()
+        if(error){
+          console.log(error)
+        }
+        else{
+          console.log('user data',userData)
+          setCreator(userData)
+        }
+      }
+    };
+
+    getUser();
   }, [selectedBoard, selectedBoardId]);
 
   const fetchBoardData = async () => {
@@ -115,6 +134,7 @@ const Kanban = ({ value }) => {
           section_id: sectionId.id,
           name: newTask,
           position: maxTaskPosition + 1,
+          created_by: creator.id,
         },
       ])
       .select();

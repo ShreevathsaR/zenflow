@@ -3,7 +3,7 @@ import { supabase } from "../../../supabaseClient";
 import "./TaskDetails.css";
 import { MdAssignmentInd } from "react-icons/md";
 import { TiAttachmentOutline } from "react-icons/ti";
-import { TbChecklist } from "react-icons/tb";
+import { TbChecklist, TbTextColor } from "react-icons/tb";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import Select, { components } from "react-select";
@@ -16,7 +16,7 @@ const TaskDetails = ({ value }) => {
 
   const [taskSectionName, setTaskSectionName] = useState(null);
   const [showAssignModal, setShowAssignModal] = useState(false);
-  const [assignedTo, setAssignedTo] = useState(null);
+  const [assignedTo, setAssignedTo] = useState([]);
 
   const selectedOrgId = useOrgIdStore((state) => state.selectedOrgId);
 
@@ -51,7 +51,12 @@ const TaskDetails = ({ value }) => {
       color: state.isSelected ? "white" : "lightgray", // Change text color based on selected or focused state
       padding: 10,
     }),
-    singleValue: (base) => ({
+    multiValueLabel: (base) => ({
+      ...base,
+      color: "#fff", // Change text color of selected value
+      fontWeight: "500",
+    }),
+    multiValue: (base) => ({
       ...base,
       color: "#fff",
       fontWeight: "500",
@@ -68,8 +73,7 @@ const TaskDetails = ({ value }) => {
 
   useEffect(() => {
     selectedOrgId && getCollaborators(selectedOrgId);
-    selectedTask && getTaskDetails() , getAssigneeData();
-
+    selectedTask && getTaskDetails(), getAssigneeData();
   }, []);
 
   const getTaskDetails = async () => {
@@ -109,39 +113,38 @@ const TaskDetails = ({ value }) => {
         .from("userorganizations")
         .select("user_id")
         .eq("organization_id", selectedOrgId);
-  
+
       if (userOrgError) {
         console.log("Error fetching organization: ", userOrgError);
         return;
       }
-  
+
       // Fetch collaborators (profiles) for all user IDs in parallel
       const userIds = userOrgdata.map((collaborator) => collaborator.user_id);
-      
+
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("full_name, id")
         .in("id", userIds); // Fetch all profiles for the user IDs
-  
+
       if (profileError) {
         console.log("Error fetching collaborators: ", profileError);
         return;
       }
-  
+
       // Map over the profiles and create the desired structure
       const collaborators = profileData.map((collaborator) => ({
         value: collaborator.full_name.toLowerCase(),
         label: collaborator.full_name,
         userId: collaborator.id,
       }));
-  
+
       console.log("Collaborators", collaborators);
       setTaskCollaborators(collaborators); // Update the state with the collaborators
     } catch (error) {
       console.error(error);
     }
   };
-  
 
   const handleChange = (selectedOption) => {
     setSelectedCollaborator(selectedOption);
@@ -150,19 +153,28 @@ const TaskDetails = ({ value }) => {
 
   const handleTaskAssignment = async (e) => {
     e.preventDefault();
+    console.log("Selected Collaborator:", selectedCollaborator);
+
+    let assignedToUserIds = []
+
+    selectedCollaborator.map((collaborator)=>{
+      assignedToUserIds.push(collaborator.userId)
+    })
+
+    console.log('Assigned to users ids',assignedToUserIds);
+    
 
     const { data, error } = await supabase
       .from("tasks")
       .update({
-        assigned_to: selectedCollaborator.userId,
+        assigned_to: assignedToUserIds,
       })
-      .eq("id", selectedTask.id);
+      .eq("id", selectedTask.id).select();
 
     if (error) {
       console.log("Error updating", error);
     } else {
       console.log("update successfull", data);
-      setAssignedTo(selectedCollaborator.label);
       setShowAssignModal(false);
       getAssigneeData();
     }
@@ -176,17 +188,28 @@ const TaskDetails = ({ value }) => {
         .eq("id", selectedTask.id);
 
       if (data) {
-        const assignedUserId = data[0].assigned_to
-        const { data: assigneeName, error } = await supabase.from("profiles").select("full_name, id").eq("id", assignedUserId);
-        console.log(assigneeName[0].full_name);
-        setAssignedTo(assigneeName[0].full_name);
-      }
+        console.log('Assigned Users',data[0].assigned_to);
 
-    }
-    catch (error) {
+        const userIdsArray = data[0].assigned_to;
+        
+        const responseData =await Promise.all(
+          userIdsArray.map(async (userId) => {
+            const { data, error } = await supabase
+              .from("profiles")
+              .select("full_name, id, avatar_url")
+              .eq("id", userId);
+            return {name:data[0].full_name,avatar:data[0].avatar_url};
+          })
+        );
+
+        console.log('response data', responseData);
+
+        setAssignedTo(responseData);
+      }
+    } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   return (
     <div className="task-details-wrapper">
@@ -223,46 +246,10 @@ const TaskDetails = ({ value }) => {
       </div>
       <div className="task-details-right">
         <div className="task-avatars">
-          {/* <AvatarGroup
-            max={4}
-            spacing={4}
-            sx={{
-              "& .MuiAvatar-root": {
-                width: 30, // Adjust the size
-                height: 30,
-                fontSize: 12,
-                color: "grey", // Adjust the font size for the +2 avatar
-              },
-            }}
-          >
-            <Avatar
-              alt="Remy Sharp"
-              src="/avatars/avatar-3.jpg"
-              sx={{ width: 30, height: 30 }}
-            />
-            <Avatar
-              alt="Travis Howard"
-              src="/avatars/avatar-2.jpg"
-              sx={{ width: 30, height: 30 }}
-            />
-            <Avatar
-              alt="Cindy Baker"
-              src="/avatars/avatar-1.png"
-              sx={{ width: 30, height: 30 }}
-            />
-            <Avatar
-              alt="Agnes Walker"
-              src="/avatars/avatar-3.jpg"
-              sx={{ width: 30, height: 30 }}
-            />
-            <Avatar
-              alt="Trevor Henderson"
-              src="/avatars/avatar-3.jpg"
-              sx={{ width: 30, height: 30 }}
-            />
-          </AvatarGroup> */}
           <p>Assigned to:</p>
-          {assignedTo}
+          {assignedTo.map((assignee, index) => (
+            assignee.avatar == null ? <p className="assignee" key={index}><img style={{marginRight:"0.5rem", width:"24px", height:"24px", borderRadius:"15px"}} src={`https://ui-avatars.com/api/?name=${assignee.name}`}/>{assignee.name}</p> : <p className="assignee" key={index}><img style={{marginRight:"0.5rem", width:"24px", height:"24px", borderRadius:"15px"}} src={assignee.avatar}/>{assignee.name}</p>
+          ))}
         </div>
         <ul
           style={{
@@ -300,8 +287,13 @@ const TaskDetails = ({ value }) => {
                 components={{ SingleValue }} // Use custom SingleValue component
                 isSearchable // Enables searching within the options
                 name="color"
+                isMulti
                 value={selectedCollaborator}
-                options={taskCollaborators.length > 0 ? taskCollaborators : "No options"}
+                options={
+                  taskCollaborators.length > 0
+                    ? taskCollaborators
+                    : "No options"
+                }
                 onChange={handleChange} // Pass options to the select dropdown
               />
               <button

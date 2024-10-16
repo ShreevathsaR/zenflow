@@ -83,6 +83,18 @@
     }
 }
 
+.assignee{
+    background-color:#21384c;
+    padding: 0.4rem;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+    margin-top: 5px;
+    border-radius: 5px;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+}
+
 /* .task-avatars div{
     font-size: x-small;
 } */

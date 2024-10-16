@@ -30,7 +30,7 @@ const OrganizationHome = () => {
 
   const { page, setPage } = usePageContext();
 
-  useEffect(() => {
+  useEffect(() => {``
     const getSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
@@ -173,8 +173,13 @@ const OrganizationHome = () => {
 
       const org_id = fetchedOrgId.data.id;
 
-      if (!collabUserId) {
+      if (error) {
         console.log("User not found");
+        Swal.fire({
+          title: "User not found",
+          text: "The user you are trying to add is not registered. Please invite the email address.",
+          icon: "error"
+        });
         return;
       } else {
         const { data, error } = await supabase

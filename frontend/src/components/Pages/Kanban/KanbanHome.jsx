@@ -8,6 +8,7 @@ import { useProjectContext } from "../../Contexts/ProjectContext";
 import { useOrganization } from "../../Contexts/OrganizationContext";
 import { supabase } from "../../../supabaseClient";
 import Kanban from "./Kanban";
+import Swal from "sweetalert2";
 
 const KanbanHome = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -22,6 +23,8 @@ const KanbanHome = () => {
   const { selectedOrganization, setSelectedOrganization } = useOrganization();
   const { selectedProject, setSelectedProject } = useProjectContext();
 
+  const [createBoardModal, setCreateBoardModal] = useState(false);
+  const [newBoardName, setNewBoardName] = useState("");
   useEffect(() => {
     fetchData();
   }, [selectedOrganization, selectedProject]);
@@ -108,9 +111,13 @@ const KanbanHome = () => {
   };
 
   const handleBoardCreate = async () => {
-    const board_name = prompt("Enter board name");
-
-    if (!board_name) {
+    setCreateBoardModal(false);
+    if (!newBoardName) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please enter a board name!",
+      });
       return;
     } else {
       const { data: projectId, error: projectIdError } = await supabase
@@ -126,7 +133,7 @@ const KanbanHome = () => {
           .from("boards")
           .insert([
             {
-              name: board_name,
+              name: newBoardName,
               project_id: selectedProjectId,
             },
           ])
@@ -158,9 +165,11 @@ const KanbanHome = () => {
 
           if (error) {
             console.log(error);
+            setNewBoardName('')
           } else {
             console.log(data);
             handleFetchBoards();
+            setNewBoardName('')
           }
         }
       }
@@ -191,12 +200,13 @@ const KanbanHome = () => {
           >
             {organizations.map((organization, index) => {
               return (
-                <option key={index} value={organization}>
-                  {organization}
+                <option className="organization-option" key={index} value={organization} >
+                  <p style={{color:"blue"}}>{organization}</p>
                 </option>
               );
             })}
           </select>
+
           <select
             className="project-select"
             value={selectedProject}
@@ -241,18 +251,62 @@ const KanbanHome = () => {
               padding: "0.5rem",
               display: "flex",
               gap: "0.7rem",
+              border:"none",
               alignItems: "center",
               borderRadius: "0.5rem",
               cursor: "pointer",
               fontWeight: "600",
             }}
             onClick={() => {
-              handleBoardCreate();
+              setCreateBoardModal(true);
             }}
           >
             Create a Board
             <IoMdAdd />
           </button>
+        )}
+        {createBoardModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h2>Create a Board</h2>
+                <button
+                  onClick={() => {
+                    setCreateBoardModal(false);
+                  }}
+                  className="close-button"
+                >
+                  &times;
+                </button>
+              </div>
+              <div className="form-group">
+                <label htmlFor="title">Board Name</label>
+                <input
+                  type="text"
+                  id="title"
+                  value={newBoardName}
+                  className="input-field"
+                  placeholder="Enter name"
+                  onChange={(e) => setNewBoardName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCreateBoardModal(false);
+                  }}
+                  className="cancel-button"
+                >
+                  Cancel
+                </button>
+                <button onClick={() => handleBoardCreate()} className="submit-button">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
       <div className="board-content">

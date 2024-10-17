@@ -240,7 +240,7 @@ const TaskDetails = ({ value }) => {
           in <u>{taskSectionName}</u>
         </p>
         <p style={{ color: "grey", fontSize: "0.75rem", opacity: "0.9" }}>
-          created at {createdAt}
+          created on {createdAt}
         </p>
         <p style={{ color: "grey", fontSize: "0.75rem", opacity: "0.9" }}>
           added by {createdBy}

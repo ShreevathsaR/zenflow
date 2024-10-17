@@ -79,3 +79,14 @@
 .close-button{
     align-self: self-start;
 }
+
+.organization-option {
+    background-color: #fff; /* Background for options */
+    color: #333;            /* Text color */
+    font-size: 16px;
+  }
+  
+  .organization-option:hover {
+    background-color: #007BFF; /* Background when hovering on options */
+    color: #fff;               /* Text color when hovered */
+  }

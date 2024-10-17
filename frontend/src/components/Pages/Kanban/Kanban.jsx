@@ -7,6 +7,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import "./Kanban.css";
 import axios from "axios";
 import TaskDetails from "./TaskDetails";
+import Swal from "sweetalert2";
 
 const Kanban = ({ value }) => {
   const [sections, setSections] = useState([]);
@@ -15,7 +16,16 @@ const Kanban = ({ value }) => {
   const [showTaskDetails, setShowTaskDetails] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const [creator,setCreator] = useState(null);
+  const [creator, setCreator] = useState(null);
+
+
+  const [newTaskName, setNewTaskName] = useState("");
+  const [newTaskDesc, setNewTaskDesc] = useState("");
+  const [newTaskModal, setNewTaskModal] = useState(false);
+  const [newTaskSectionId, setNewTaskSectionId] = useState(null);;
+
+  const [newSectionName, setNewSectionName] = useState("");
+  const [newSectionModal, setNewSectionModal] = useState(false);
 
   const {
     selectedBoard,
@@ -52,13 +62,13 @@ const Kanban = ({ value }) => {
         console.log(error);
       } else {
         console.log(data);
-        
-        const {data:userData,error} = await supabase.from('profiles').select('id,full_name').eq('id',data.user.id).single()
-        if(error){
+
+        const { data: userData, error } = await supabase.from('profiles').select('id,full_name').eq('id', data.user.id).single()
+        if (error) {
           console.log(error)
         }
-        else{
-          console.log('user data',userData)
+        else {
+          console.log('user data', userData)
           setCreator(userData)
         }
       }
@@ -90,8 +100,20 @@ const Kanban = ({ value }) => {
   };
 
   const handleAddSection = async () => {
+    setNewSectionModal(false);
     console.log(selectedBoardId);
-    const sectionTitle = prompt("Enter a section title");
+
+    if(!newSectionName){
+      Swal.fire({
+        title: "Error",
+        text: "Please enter a section name.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return
+    }
+
+    const sectionTitle = newSectionName;
 
     const maxPosition =
       sections.length > 0
@@ -108,15 +130,30 @@ const Kanban = ({ value }) => {
     if (response.status === 200) {
       console.log(response);
       fetchSectionsAndTasks();
+      setNewSectionName("");
     } else {
       console.log("Error adding section");
+      setNewSectionName("");
     }
   };
 
-  const handleAddTask = async (sectionId) => {
-    const newTask = prompt("Enter a task");
-    if (!newTask) return;
-    console.log(sectionId.id);
+  const handleAddTask = async () => {
+    if (!newTaskName || !newTaskDesc) {
+      Swal.fire({
+        title: "Error",
+        text: "Please fill in all fields",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      setNewTaskModal(false);
+      return;
+    }
+
+    const sectionId = sections.find(section => section.id === newTaskSectionId);
+    console.log(sectionId);
+
+
+    setNewTaskModal(false);
 
     const section = sections.find((sec) => sec.id === sectionId.id);
 
@@ -132,7 +169,8 @@ const Kanban = ({ value }) => {
       .insert([
         {
           section_id: sectionId.id,
-          name: newTask,
+          name: newTaskName,
+          description: newTaskDesc,
           position: maxTaskPosition + 1,
           created_by: creator.id,
         },
@@ -140,19 +178,14 @@ const Kanban = ({ value }) => {
       .select();
     if (error) {
       console.log(error);
+      setNewTaskName("");
+      setNewTaskDesc("");
     } else {
       console.log(data);
       fetchSectionsAndTasks();
+      setNewTaskName("");
+      setNewTaskDesc("");
     }
-  };
-
-  const fetchTasks = async (sectionId) => {
-    const { data, error } = await supabase
-      .from("tasks")
-      .select("*")
-      .eq("section_id", sectionId.id);
-    setTasks(data);
-    console.log(data);
   };
 
   const fetchSectionsAndTasks = async () => {
@@ -342,13 +375,13 @@ const Kanban = ({ value }) => {
           section_id: destinationSectionId.id,
         })
         .eq("id", task.id);
-      
-        if(response.error == null) {
-          console.log("Task order updated successfully");
-          fetchSectionsAndTasks();
-        } else {
-          console.error("Error updating task order:", response.error);
-        }
+
+      if (response.error == null) {
+        console.log("Task order updated successfully");
+        fetchSectionsAndTasks();
+      } else {
+        console.error("Error updating task order:", response.error);
+      }
     }
   };
 
@@ -356,6 +389,11 @@ const Kanban = ({ value }) => {
     setSelectedTask(task);
     console.log(task)
     setShowTaskDetails(true);
+  };
+
+  const handleNewTaskModal = (sectionId) => {
+    setNewTaskSectionId(sectionId.id);
+    setNewTaskModal(true);
   };
 
   return (
@@ -368,7 +406,6 @@ const Kanban = ({ value }) => {
             direction="horizontal"
           >
             {(provided) => {
-              console.log("Droppable rendered with id: all-sections");
               return (
                 <div
                   className="kanban-board"
@@ -427,10 +464,63 @@ const Kanban = ({ value }) => {
                                   {provided.placeholder}
                                   <div
                                     className="add-task"
-                                    onClick={() => handleAddTask(section)}
+                                    onClick={() => handleNewTaskModal(section)}
                                   >
                                     Add Task
                                   </div>
+                                  {newTaskModal && (
+                                    <div className="modal-overlay">
+                                      <div className="modal-content">
+                                        <div className="modal-header">
+                                          <h2>Add a Task</h2>
+                                          <button
+                                            onClick={() => {
+                                              setNewTaskModal(false);
+                                            }}
+                                            className="close-button"
+                                          >
+                                            &times;
+                                          </button>
+                                        </div>
+                                        <div className="form-group">
+                                          <label htmlFor="title">Task title</label>
+                                          <input
+                                            type="text"
+                                            id="title"
+                                            value={newTaskName}
+                                            className="input-field"
+                                            placeholder="Enter name"
+                                            onChange={(e) => setNewTaskName(e.target.value)}
+                                            required
+                                          />
+                                          <label htmlFor="title">Task Description</label>
+                                          <input
+                                            type="text"
+                                            id="title"
+                                            value={newTaskDesc}
+                                            className="input-field"
+                                            placeholder="Enter description"
+                                            onChange={(e) => setNewTaskDesc(e.target.value)}
+                                            required
+                                          />
+                                        </div>
+                                        <div className="modal-footer">
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setNewTaskModal(false);
+                                            }}
+                                            className="cancel-button"
+                                          >
+                                            Cancel
+                                          </button>
+                                          <button onClick={() => handleAddTask(section)} className="submit-button">
+                                            Submit
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
                                 </ul>
                               )}
                             </Droppable>
@@ -441,10 +531,54 @@ const Kanban = ({ value }) => {
                   {provided.placeholder}
                   <div
                     className="section-addition"
-                    onClick={() => handleAddSection()}
+                    onClick={() => setNewSectionModal(true)}
                   >
                     Add section
                   </div>
+                  {newSectionModal && (
+                    <div className="modal-overlay">
+                      <div className="modal-content">
+                        <div className="modal-header">
+                          <h2>Add a Section</h2>
+                          <button
+                            onClick={() => {
+                              setNewSectionModal(false);
+                            }}
+                            className="close-button"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="title">Section Name</label>
+                          <input
+                            type="text"
+                            id="title"
+                            value={newSectionName}
+                            className="input-field"
+                            placeholder="Enter name"
+                            onChange={(e) => setNewSectionName(e.target.value)}
+                            required
+                          />
+                        </div>
+                        <div className="modal-footer">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewSectionModal(false);
+                            }}
+                            className="cancel-button"
+                          >
+                            Cancel
+                          </button>
+                          <button onClick={() => handleAddSection()} className="submit-button">
+                            Submit
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                  )}
                 </div>
               );
             }}
@@ -454,22 +588,22 @@ const Kanban = ({ value }) => {
       {showTaskDetails && (
         <div className="task-details">
           <div className="modal-overlay">
-              <div className="details-modal-content">
-                <div className="modal-header">
-                  {/* <h2>{selectedTask.name}</h2> */}
-                  <TaskDetails value={{selectedTask, setSelectedTask}} />
-                  <button
-                    style={{color:"white"}}
-                    onClick={() => {
-                      setShowTaskDetails(false);
-                    }}
-                    className="close-button"
-                  >
-                    &times;
-                  </button>
-                </div>
+            <div className="details-modal-content">
+              <div className="modal-header">
+                {/* <h2>{selectedTask.name}</h2> */}
+                <TaskDetails value={{ selectedTask, setSelectedTask }} />
+                <button
+                  style={{ color: "white" }}
+                  onClick={() => {
+                    setShowTaskDetails(false);
+                  }}
+                  className="close-button"
+                >
+                  &times;
+                </button>
               </div>
             </div>
+          </div>
         </div>
       )}
     </div>

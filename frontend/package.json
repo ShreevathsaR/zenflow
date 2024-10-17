@@ -28,6 +28,7 @@
     "react-loading-skeleton": "^3.4.0",
     "react-router-dom": "^6.25.1",
     "react-select": "^5.8.1",
+    "socket.io-client": "^4.8.0",
     "sweetalert2": "^11.12.3",
     "zustand": "^5.0.0-rc.2"
   },

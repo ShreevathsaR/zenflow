@@ -198,6 +198,7 @@ const TaskDetails = ({ value }) => {
       console.log("update successfull", data);
       setShowAssignModal(false);
       getAssigneeData();
+      //notify the users about the assignment
     }
   };
 
@@ -214,7 +215,7 @@ const TaskDetails = ({ value }) => {
         const userIdsArray = data[0].assigned_to;
 
         const responseData = await Promise.all(
-          userIdsArray.map(async (userId) => {
+          userIdsArray.map(async(userId) => {
             const { data, error } = await supabase
               .from("profiles")
               .select("full_name, id, avatar_url")

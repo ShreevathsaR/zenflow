@@ -2,15 +2,24 @@ const express = require("express");
 const pool = require("./db");
 const app = express();
 const axios = require("axios");
+const http = require("http");
 const dotenv = require("dotenv");
 const crypto = require("crypto");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
 
+const server = http.createServer(app);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
 dotenv.config();
 
 app.use(cors());
 app.use(express.json());
+
 
 app.get("/organizations", async (req, res) => {
   const { id } = req.query;
@@ -201,8 +210,18 @@ const pingServer = () => {
 };
 setInterval(pingServer, 300000);
 
+io.on('connection', (socket) => {
+  console.log('A user connected', socket.id);
+
+  socket.on('notification', (data) => {
+    console.log('Received notification:', data);
+    io.emit('notification', data);
+  });
+
+})
+
 const PORT = 8000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

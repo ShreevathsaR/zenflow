@@ -7,9 +7,11 @@ import { TbMinusVertical } from "react-icons/tb";
 import "./App.css";
 import { OrganizationProvider } from "./components/Contexts/OrganizationContext";
 import { ProjectContextProvider } from "./components/Contexts/ProjectContext";
+import {io} from "socket.io-client";
 
 function App() {
   const [showSideBar, setShowSideBar] = useState(true);
+  const [socket, setSocket] = useState(null);
 
   const toggleSidebar = () => {
     setShowSideBar((prev) => !prev);
@@ -17,21 +19,33 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      // Check if Ctrl (or Cmd on Mac) is pressed along with the 'S' key
       if ((event.ctrlKey || event.metaKey) && event.key === "s") {
-        event.preventDefault(); // Prevent the default browser save action
+        event.preventDefault();
         toggleSidebar();
       }
     };
-
-    // Add the event listener when the component mounts
     window.addEventListener("keydown", handleKeyDown);
 
-    // Clean up the event listener when the component unmounts
+    const newSocket = io("http://localhost:8000");
+    setSocket(newSocket);
+
+    newSocket.on("connection", () => {
+      console.log("Connected to server");
+    });
+
+    newSocket.on('notificaton', (data) => {
+      console.log(data);
+    });
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      newSocket.disconnect();
     };
   }, []);
+
+  const sendMessage = () => {
+    socket.emit("notification", "You are invited to an organization");
+  };
 
   return (
     <ProjectContextProvider>
@@ -55,6 +69,7 @@ function App() {
             <div className="page-container">
               <Page />
             </div>
+            <button onClick={sendMessage}>Send message</button>
           </div>
         </PageContextProvider>
       </OrganizationProvider>

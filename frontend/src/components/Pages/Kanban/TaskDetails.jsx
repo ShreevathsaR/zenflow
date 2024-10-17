@@ -24,6 +24,9 @@ const TaskDetails = ({ value }) => {
 
   const [taskCollaborators, setTaskCollaborators] = useState([]);
 
+  const [createdBy, setCreatedBy] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
+
   const colourOptions = [
     { value: "red", label: "Red", color: "#FF5630" },
     { value: "blue", label: "Blue", color: "#0052CC" },
@@ -82,7 +85,25 @@ const TaskDetails = ({ value }) => {
         .from("tasks")
         .select("*")
         .eq("id", selectedTask.id);
-      // console.log(data);
+
+      const taskCreator = data[0].created_by;
+      const taskCreatedAt = data[0].created_at;
+      const timestamp = new Date(taskCreatedAt);
+      const formattedDate = timestamp.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+      setCreatedAt(formattedDate);
+
+      const {data:userData,error:userError} = await supabase.from("profiles").select("*").eq("id",taskCreator).single();
+      if(userError){
+        console.log(userError);
+        return
+      }
+
+      console.log(userData.full_name);
+      setCreatedBy(userData.full_name);
 
       const currentTaskSectionId = data[0].section_id;
 
@@ -155,21 +176,21 @@ const TaskDetails = ({ value }) => {
     e.preventDefault();
     console.log("Selected Collaborator:", selectedCollaborator);
 
-    let assignedToUserIds = []
+    let assignedToUserIds = [];
 
-    selectedCollaborator.map((collaborator)=>{
-      assignedToUserIds.push(collaborator.userId)
-    })
+    selectedCollaborator.map((collaborator) => {
+      assignedToUserIds.push(collaborator.userId);
+    });
 
-    console.log('Assigned to users ids',assignedToUserIds);
-    
+    console.log("Assigned to users ids", assignedToUserIds);
 
     const { data, error } = await supabase
       .from("tasks")
       .update({
         assigned_to: assignedToUserIds,
       })
-      .eq("id", selectedTask.id).select();
+      .eq("id", selectedTask.id)
+      .select();
 
     if (error) {
       console.log("Error updating", error);
@@ -188,21 +209,21 @@ const TaskDetails = ({ value }) => {
         .eq("id", selectedTask.id);
 
       if (data) {
-        console.log('Assigned Users',data[0].assigned_to);
+        console.log("Assigned Users", data[0].assigned_to);
 
         const userIdsArray = data[0].assigned_to;
-        
-        const responseData =await Promise.all(
+
+        const responseData = await Promise.all(
           userIdsArray.map(async (userId) => {
             const { data, error } = await supabase
               .from("profiles")
               .select("full_name, id, avatar_url")
               .eq("id", userId);
-            return {name:data[0].full_name,avatar:data[0].avatar_url};
+            return { name: data[0].full_name, avatar: data[0].avatar_url };
           })
         );
 
-        console.log('response data', responseData);
+        console.log("response data", responseData);
 
         setAssignedTo(responseData);
       }
@@ -219,10 +240,10 @@ const TaskDetails = ({ value }) => {
           in <u>{taskSectionName}</u>
         </p>
         <p style={{ color: "grey", fontSize: "0.75rem", opacity: "0.9" }}>
-          created at 7th Sept
+          created at {createdAt}
         </p>
         <p style={{ color: "grey", fontSize: "0.75rem", opacity: "0.9" }}>
-          added by Shreevathsa
+          added by {createdBy}
         </p>
         <br />
         <div className="task-desc">
@@ -245,12 +266,38 @@ const TaskDetails = ({ value }) => {
         </div>
       </div>
       <div className="task-details-right">
-        <div className="task-avatars">
+        {assignedTo.length > 0 && <div className="task-avatars">
           <p>Assigned to:</p>
-          {assignedTo.map((assignee, index) => (
-            assignee.avatar == null ? <p className="assignee" key={index}><img style={{marginRight:"0.5rem", width:"24px", height:"24px", borderRadius:"15px"}} src={`https://ui-avatars.com/api/?name=${assignee.name}`}/>{assignee.name}</p> : <p className="assignee" key={index}><img style={{marginRight:"0.5rem", width:"24px", height:"24px", borderRadius:"15px"}} src={assignee.avatar}/>{assignee.name}</p>
-          ))}
-        </div>
+          {assignedTo.map((assignee, index) =>
+            assignee.avatar == null ? (
+              <p className="assignee" key={index}>
+                <img
+                  style={{
+                    marginRight: "0.5rem",
+                    width: "24px",
+                    height: "24px",
+                    borderRadius: "15px",
+                  }}
+                  src={`https://ui-avatars.com/api/?name=${assignee.name}`}
+                />
+                {assignee.name}
+              </p>
+            ) : (
+              <p className="assignee" key={index}>
+                <img
+                  style={{
+                    marginRight: "0.5rem",
+                    width: "24px",
+                    height: "24px",
+                    borderRadius: "15px",
+                  }}
+                  src={assignee.avatar}
+                />
+                {assignee.name}
+              </p>
+            )
+          )}
+        </div>}
         <ul
           style={{
             display: "flex",

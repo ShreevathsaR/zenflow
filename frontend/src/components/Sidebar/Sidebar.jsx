@@ -20,12 +20,14 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useOrgIdStore } from "../Contexts/OrgIdStore";
 
-const Sidebar = ({ showSideBar, setShowSideBar }) => {
+const Sidebar = ({ values }) => {
   const navigate = useNavigate();
   // console.log(setShowSideBar);
 
   const [username, setUsername] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
+
+  const { showSideBar, setShowSideBar, notifications } = values;
 
   const [associatedOrganizations, setAssociatedOrganizations] = useState([]);
 
@@ -57,14 +59,13 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
   const { selectedProject, setSelectedProject } = useProjectContext();
 
   useEffect(() => {
-    
     const fetchUsername = async () => {
       setLoading(true);
       const { data, error } = await supabase.auth.getSession();
 
       if (data) {
-        console.log('Got the user data',data);
-        
+        console.log("Got the user data", data);
+
         const currentUserId = data.session.user.id;
         localStorage.setItem("currentUserId", currentUserId);
 
@@ -72,7 +73,6 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
           .from("profiles")
           .select("full_name, avatar_url")
           .eq("id", currentUserId);
-          
 
         setUsername(username.data[0].full_name);
         setUserAvatar(username.data[0].avatar_url);
@@ -87,7 +87,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
     };
 
     fetchUsername();
-  }, []);
+  }, [notifications]);
 
   useEffect(() => {
     if (selectedOrganization) {
@@ -117,7 +117,6 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       console.error("No organization selected");
       return;
     }
-    
 
     const fetchedOrgId = await supabase
       .from("organizations")
@@ -125,8 +124,7 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       .eq("name", selectedOrganization)
       .single();
 
-      console.log('data', fetchedOrgId);
-      
+    console.log("data", fetchedOrgId);
 
     if (!fetchedOrgId.data) {
       setLoading(false);
@@ -177,34 +175,40 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
       console.log("associated orgs", data);
 
       const associatedOrganizationsData = await Promise.all(
-        data.map(async(org1) => {
-          const {data: associatedOrgNames, error} = await supabase.from('organizations').select('*').eq("id", org1.organization_id);
+        data.map(async (org1) => {
+          const { data: associatedOrgNames, error } = await supabase
+            .from("organizations")
+            .select("*")
+            .eq("id", org1.organization_id);
 
-          if(associatedOrgNames){
-            console.log('associated org names',associatedOrgNames);
+          if (associatedOrgNames) {
+            console.log("associated org names", associatedOrgNames);
 
             const orgData = associatedOrgNames.map((org) => {
-              return {"sec_id":org.id,"org_name": org.name, "org_owner": org.owner_id, "org_user_role": org1.role };
+              return {
+                sec_id: org.id,
+                org_name: org.name,
+                org_owner: org.owner_id,
+                org_user_role: org1.role,
+              };
             });
             return orgData;
           }
 
-          if(error){
+          if (error) {
             console.log(error);
-            return
+            return;
           }
         })
+      );
 
-      )
-
-      console.log(associatedOrganizationsData)
+      console.log(associatedOrganizationsData);
 
       let flattenedOrgNames = associatedOrganizationsData
-      .flat()
-      .map((org) => org); // Extract just the name property
+        .flat()
+        .map((org) => org); // Extract just the name property
 
-    console.log(flattenedOrgNames);
-
+      console.log(flattenedOrgNames);
 
       setAssociatedOrganizations(flattenedOrgNames);
     } catch (error) {
@@ -364,13 +368,15 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
             </div>
           </div>
         )}
-        {userAvatar && <img
-          style={{ width: "30px", height: "30px", borderRadius: "15px" }}
-          src={userAvatar}
-          onClick={() => {
-            setLogout(true);
-          }}
-        />}
+        {userAvatar && (
+          <img
+            style={{ width: "30px", height: "30px", borderRadius: "15px" }}
+            src={userAvatar}
+            onClick={() => {
+              setLogout(true);
+            }}
+          />
+        )}
         <div className="sidebar-username">{selectedOrganization}</div>
         <div className="notifications">
           <FaChevronDown onClick={handleShowAllOrgs} />
@@ -402,44 +408,64 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               />
             </div>
             <hr style={{ opacity: "0.5" }} />
-            {organizations.length === 0 && <div className="organization-li">Create one</div>}
+            {organizations.length === 0 && (
+              <div className="organization-li">Create one</div>
+            )}
             {organizations.map((org, index) => {
               return (
                 <div
-                key={index}
-                className={
-                  selectedOrganization === org
-                  ? "selected-organization"
-                  : "organization-li"
-                }
-                style={{cursor:"pointer"}}
-                onClick={() => {
-                  handleClickOnOrganization(org);
-                }}
+                  key={index}
+                  className={
+                    selectedOrganization === org
+                      ? "selected-organization"
+                      : "organization-li"
+                  }
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    handleClickOnOrganization(org);
+                  }}
                 >
                   {org}
                 </div>
               );
             })}
-            <hr style={{"opacity": "0.5"}}/>
-            <h3 style={{backgroundColor:"#04151e", fontSize:"0.9rem", display:"flex"}}>Associated Organizations</h3>
-            {!associatedOrganizations.length && <div className="organization-li">No associated organizations</div>}
+            <hr style={{ opacity: "0.5" }} />
+            <h3
+              style={{
+                backgroundColor: "#04151e",
+                fontSize: "0.9rem",
+                display: "flex",
+              }}
+            >
+              Associated Organizations
+            </h3>
+            {!associatedOrganizations.length && (
+              <div className="organization-li">No associated organizations</div>
+            )}
             {associatedOrganizations.map((org, index) => {
               return (
                 <div
-                key={index}
-                className={
-                  selectedOrganization === org
-                  ? "selected-organization"
-                  : "organization-li"
-                }
-                  style={{display:"flex", flexDirection:"column", alignItems:"flex-start", justifyContent:"center", cursor:"pointer"}}
+                  key={index}
+                  className={
+                    selectedOrganization === org
+                      ? "selected-organization"
+                      : "organization-li"
+                  }
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                  }}
                   // onClick={() => {
                   //   handleClickOnOrganization(org);
                   // }}
                 >
                   {org.org_name}
-                  <p style={{opacity:"0.5", fontSize:"small"}}>{org.org_user_role}</p>
+                  <p style={{ opacity: "0.5", fontSize: "small" }}>
+                    {org.org_user_role}
+                  </p>
                 </div>
               );
             })}
@@ -454,12 +480,35 @@ const Sidebar = ({ showSideBar, setShowSideBar }) => {
               Home
             </li>
             <li
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
               onClick={() => {
                 handleInbox();
               }}
             >
-              <FaInbox style={{ paddingRight: "0.4rem" }} />
-              Inbox
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <FaInbox style={{ paddingRight: "0.4rem" }} />
+                Inbox
+              </div>
+
+              {notifications.length > 0 && (
+                <p
+                  style={{
+                    backdropFilter: "brightness(2.25)",
+                    width: "20px",
+                    height: "20px",
+                    textAlign: "center",
+                    borderRadius: "15px",
+                    fontSize: "small",
+                    marginRight: "0.5rem",
+                  }}
+                >
+                  {notifications.length}
+                </p>
+              )}
             </li>
             <li
               className={page === "Notes" ? "selected-overview" : ""}

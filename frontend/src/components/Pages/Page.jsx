@@ -7,9 +7,11 @@ import KanbanHome from "./Kanban/KanbanHome";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 
-const Page = () => {
+const Page = ({values}) => {
   const { page } = usePageContext();
   const navigate = useNavigate();
+
+  const {notifications,setNotifications} = values
 
   useEffect(() => {
     const org_id = sessionStorage.getItem("orgId");
@@ -130,7 +132,7 @@ const Page = () => {
         </div>
       )}
       {page === "Notes" && <KanbanHome />}
-      {page === "Inbox" && <Inbox />}
+      {page === "Inbox" && <Inbox notificationValues={values}/>}
       {page === "OrganizationHome" && <OrganizationHome />}
     </div>
   );

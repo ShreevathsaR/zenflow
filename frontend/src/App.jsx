@@ -7,11 +7,13 @@ import { TbMinusVertical } from "react-icons/tb";
 import "./App.css";
 import { OrganizationProvider } from "./components/Contexts/OrganizationContext";
 import { ProjectContextProvider } from "./components/Contexts/ProjectContext";
-import {io} from "socket.io-client";
+import { io } from "socket.io-client";
 
 function App() {
   const [showSideBar, setShowSideBar] = useState(true);
   const [socket, setSocket] = useState(null);
+
+  const [notifications, setNotifications] = useState([]);
 
   const toggleSidebar = () => {
     setShowSideBar((prev) => !prev);
@@ -33,8 +35,9 @@ function App() {
       console.log("Connected to server");
     });
 
-    newSocket.on('notificaton', (data) => {
+    newSocket.on("notification", (data) => {
       console.log(data);
+      setNotifications((prev) => [...prev, data]);
     });
 
     return () => {
@@ -61,13 +64,15 @@ function App() {
             }}
           >
             {showSideBar && (
-              <Sidebar setShowSideBar={{ showSideBar, setShowSideBar }} />
+              <Sidebar
+                values={{ showSideBar, setShowSideBar, notifications }}
+              />
             )}
             <div className="sidebar-opener">
               <TbMinusVertical onClick={toggleSidebar} />
             </div>
             <div className="page-container">
-              <Page />
+              <Page values={{ notifications, setNotifications }} />
             </div>
             <button onClick={sendMessage}>Send message</button>
           </div>

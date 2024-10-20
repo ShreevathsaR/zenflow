@@ -6,12 +6,37 @@ import OrganizationHome from "../Organization/OrganizationHome";
 import KanbanHome from "./Kanban/KanbanHome";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { useNotifications } from "../Contexts/NotificationContext";
+import { io } from "socket.io-client";
 
-const Page = ({values}) => {
+const Page = () => {
   const { page } = usePageContext();
   const navigate = useNavigate();
 
-  const {notifications,setNotifications} = values
+  const [socket, setSocket] = useState(null);
+
+  const [userId, setUserId] = useState(null);
+
+  const { notifications, setNotifications } = useNotifications();
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:8000");
+    setSocket(newSocket);
+
+    newSocket.on("connection", () => {
+      console.log("Connected to server");
+    });
+    
+    newSocket.on("notification", (data) => {
+      console.log(data);
+      setNotifications((prev) => [...prev, data]);
+    });
+    
+    getUser(newSocket);
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const org_id = sessionStorage.getItem("orgId");
@@ -28,6 +53,24 @@ const Page = ({values}) => {
     };
     getSession();
   }, []);
+
+  const getUser = async (newSocket) => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+      console.log(error);
+    } else {
+      setUserId(data.user.id);
+      if(newSocket){
+        newSocket.emit("register", data.user.id);
+      } else {
+        console.log('Could not register user');
+      }
+    }
+  };
+
+  const sendMessage = () => {
+    socket.emit("notification", "Message");
+  };
 
   const addGoogleUserToDatabase = async (user, org_id) => {
     const { id, email, user_metadata } = user;
@@ -129,10 +172,11 @@ const Page = ({values}) => {
           }}
         >
           Select a tool
+          <button onClick={sendMessage}>Send message</button>
         </div>
       )}
       {page === "Notes" && <KanbanHome />}
-      {page === "Inbox" && <Inbox notificationValues={values}/>}
+      {page === "Inbox" && <Inbox />}
       {page === "OrganizationHome" && <OrganizationHome />}
     </div>
   );

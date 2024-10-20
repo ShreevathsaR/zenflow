@@ -19,6 +19,7 @@ import { useProjectContext } from "../Contexts/ProjectContext";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useOrgIdStore } from "../Contexts/OrgIdStore";
+import { useNotifications } from "../Contexts/NotificationContext";
 
 const Sidebar = ({ values }) => {
   const navigate = useNavigate();
@@ -27,8 +28,9 @@ const Sidebar = ({ values }) => {
   const [username, setUsername] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
 
-  const { showSideBar, setShowSideBar, notifications } = values;
+  const { showSideBar, setShowSideBar } = values;
 
+  const {notifications, setNotifications} = useNotifications();
   const [associatedOrganizations, setAssociatedOrganizations] = useState([]);
 
   const orgOptionsRef = useRef(null);

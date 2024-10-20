@@ -210,12 +210,31 @@ const pingServer = () => {
 };
 setInterval(pingServer, 300000);
 
+const registerdUsers = {}
+
 io.on('connection', (socket) => {
-  console.log('A user connected', socket.id);
+  // console.log('A user connected', socket.id);
+
+  socket.on('register',(data)=>{
+    registerdUsers[data] = socket.id;
+    console.log(`User registered with ID: ${data} and socket ID: ${socket.id}`);
+  })
 
   socket.on('notification', (data) => {
     console.log('Received notification:', data);
     io.emit('notification', data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`Socket disconnected: ${socket.id}`);
+    
+    // Remove the userId associated with this socket if needed
+    for (const userId in registerdUsers) {
+      if (registerdUsers[userId] === socket.id) {
+        delete registerdUsers[userId]; // Clean up the mapping
+        console.log(`User with ID: ${userId} disconnected.`);
+      }
+    }
   });
 
 })

@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react'
 import './Inbox.css'
 import { supabase } from '../../../supabaseClient'
+import { useNotifications} from '../../Contexts/NotificationContext';
 
-const Inbox = ({notificationValues}) => {
+const Inbox = () => {
 
   // const {values} = notificationValues
-  const {notifications,setNotifications} = notificationValues
+  const {notifications, setNotifications} = useNotifications();
+
 
   useEffect(()=>{
 
@@ -14,7 +16,7 @@ const Inbox = ({notificationValues}) => {
 
     getUser();
     console.log('hi')
-  },[notificationValues])
+  },[notifications])
 
   const getUser = async() => {
     const {data,error} =await supabase.from('profiles').select('*').eq('email','shreevathsar2002@gmail.com').single();

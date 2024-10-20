@@ -7,13 +7,10 @@ import { TbMinusVertical } from "react-icons/tb";
 import "./App.css";
 import { OrganizationProvider } from "./components/Contexts/OrganizationContext";
 import { ProjectContextProvider } from "./components/Contexts/ProjectContext";
-import { io } from "socket.io-client";
+import { NotificationsProvider } from "./components/Contexts/NotificationContext";
 
 function App() {
   const [showSideBar, setShowSideBar] = useState(true);
-  const [socket, setSocket] = useState(null);
-
-  const [notifications, setNotifications] = useState([]);
 
   const toggleSidebar = () => {
     setShowSideBar((prev) => !prev);
@@ -27,33 +24,13 @@ function App() {
       }
     };
     window.addEventListener("keydown", handleKeyDown);
-
-    const newSocket = io("http://localhost:8000");
-    setSocket(newSocket);
-
-    newSocket.on("connection", () => {
-      console.log("Connected to server");
-    });
-
-    newSocket.on("notification", (data) => {
-      console.log(data);
-      setNotifications((prev) => [...prev, data]);
-    });
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      newSocket.disconnect();
-    };
   }, []);
-
-  const sendMessage = () => {
-    socket.emit("notification", "You are invited to an organization");
-  };
 
   return (
     <ProjectContextProvider>
       <OrganizationProvider>
         <PageContextProvider>
+          <NotificationsProvider>
           {/* <Header /> */}
           <div
             style={{
@@ -65,17 +42,17 @@ function App() {
           >
             {showSideBar && (
               <Sidebar
-                values={{ showSideBar, setShowSideBar, notifications }}
+                values={{ showSideBar, setShowSideBar }}
               />
             )}
             <div className="sidebar-opener">
               <TbMinusVertical onClick={toggleSidebar} />
             </div>
             <div className="page-container">
-              <Page values={{ notifications, setNotifications }} />
+              <Page />
             </div>
-            <button onClick={sendMessage}>Send message</button>
           </div>
+          </NotificationsProvider>
         </PageContextProvider>
       </OrganizationProvider>
     </ProjectContextProvider>

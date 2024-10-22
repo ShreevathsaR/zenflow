@@ -172,7 +172,6 @@ const Page = () => {
           }}
         >
           Select a tool
-          <button onClick={sendMessage}>Send message</button>
         </div>
       )}
       {page === "Notes" && <KanbanHome socket={socket} />}

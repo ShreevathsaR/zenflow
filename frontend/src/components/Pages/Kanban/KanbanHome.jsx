@@ -10,7 +10,7 @@ import { supabase } from "../../../supabaseClient";
 import Kanban from "./Kanban";
 import Swal from "sweetalert2";
 
-const KanbanHome = () => {
+const KanbanHome = ({socket}) => {
   const [organizations, setOrganizations] = useState([]);
   const [projects, setProjects] = useState([]);
 
@@ -317,6 +317,7 @@ const KanbanHome = () => {
               setSelectedBoard,
               selectedBoardId,
               setSelectedBoardId,
+              socket
             }}
           />
         )}

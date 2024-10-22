@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Inbox.css'
 import { supabase } from '../../../supabaseClient'
 import { useNotifications} from '../../Contexts/NotificationContext';
@@ -7,15 +7,22 @@ const Inbox = () => {
 
   // const {values} = notificationValues
   const {notifications, setNotifications} = useNotifications();
+  const [inboxNotifications, setInboxNotifications] = useState([]);
+  const [notificationType, setNotificationType] = useState('message');
 
 
   useEffect(()=>{
-
-      console.log(notifications);
-
-
+    
+    if(notifications.length > 0){
+      notifications.map((notification)=>{
+        notification.type == 'task_assignment' && (
+          setInboxNotifications([notification]),
+          setNotificationType('Assignment')
+        )
+      })
+      console.log(notifications); 
+    }
     getUser();
-    console.log('hi')
   },[notifications])
 
   const getUser = async() => {
@@ -39,8 +46,8 @@ const Inbox = () => {
             <li className='inbox-message'>You are invited to an organization</li>
           </ul> */}
           <ul>
-            {notifications.map((notification, index)=>{
-             return <li key={index} className='inbox-message'>{notification}<div className='btn-container'><button>Accept</button><button>Reject</button></div></li>
+            {notificationType == 'Assignment' && inboxNotifications.map((notification, index)=>{
+             return <li key={index} className='inbox-message'>You are assigned to a task {notification.taskName} by {notification.taskCreatedBy}</li>
             })}
           </ul>
       </div>

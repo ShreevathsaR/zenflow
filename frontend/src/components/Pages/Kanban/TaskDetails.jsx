@@ -12,7 +12,7 @@ import { useOrgIdStore } from "../../Contexts/OrgIdStore";
 // import { ColourOption, colourOptions } from '../data';
 
 const TaskDetails = ({ value }) => {
-  const { selectedTask, setSelectedTask } = value;
+  const { selectedTask, setSelectedTask, socket } = value;
 
   const [taskSectionName, setTaskSectionName] = useState(null);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -26,12 +26,6 @@ const TaskDetails = ({ value }) => {
 
   const [createdBy, setCreatedBy] = useState("");
   const [createdAt, setCreatedAt] = useState("");
-
-  const colourOptions = [
-    { value: "red", label: "Red", color: "#FF5630" },
-    { value: "blue", label: "Blue", color: "#0052CC" },
-    { value: "green", label: "Green", color: "#36B37E" },
-  ];
 
   const customStyles = {
     control: (base) => ({
@@ -195,10 +189,18 @@ const TaskDetails = ({ value }) => {
     if (error) {
       console.log("Error updating", error);
     } else {
-      console.log("update successfull", data);
+      console.log("update successfull", data[0]);
       setShowAssignModal(false);
       getAssigneeData();
-      //notify the users about the assignment
+      assignedToUserIds.map((userId)=>{
+        const dataToSend = {
+          type: "task_assignment",
+          userId: userId,
+          taskName: selectedTask.name,
+          taskCreatedBy: createdBy,
+        };
+        socket.emit('notification',(dataToSend))
+      })
     }
   };
 
@@ -210,7 +212,7 @@ const TaskDetails = ({ value }) => {
         .eq("id", selectedTask.id);
 
       if (data) {
-        console.log("Assigned Users", data[0].assigned_to);
+        // console.log("Assigned Users", data[0].assigned_to);
 
         const userIdsArray = data[0].assigned_to;
 

@@ -175,7 +175,7 @@ const Page = () => {
           <button onClick={sendMessage}>Send message</button>
         </div>
       )}
-      {page === "Notes" && <KanbanHome />}
+      {page === "Notes" && <KanbanHome socket={socket} />}
       {page === "Inbox" && <Inbox />}
       {page === "OrganizationHome" && <OrganizationHome />}
     </div>

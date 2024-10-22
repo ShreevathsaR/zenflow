@@ -32,28 +32,13 @@ const Kanban = ({ value }) => {
     setSelectedBoard,
     selectedBoardId,
     setSelectedBoardId,
+    socket
   } = value;
 
   const { selectedProject, setSelectedProject } = useProjectContext();
 
-  const Todo = {
-    title: "Todo",
-    tasks: ["task1", "task2", "task3"],
-  };
-
-  const Doing = {
-    title: "Doing",
-    tasks: [],
-  };
-
-  const Done = {
-    title: "Done",
-    tasks: [],
-  };
-
   useEffect(() => {
     fetchBoardData();
-    // fetchSections();
     fetchSectionsAndTasks();
 
     const getUser = async () => {
@@ -591,7 +576,7 @@ const Kanban = ({ value }) => {
             <div className="details-modal-content">
               <div className="modal-header">
                 {/* <h2>{selectedTask.name}</h2> */}
-                <TaskDetails value={{ selectedTask, setSelectedTask }} />
+                <TaskDetails value={{ selectedTask, setSelectedTask, socket }} />
                 <button
                   style={{ color: "white" }}
                   onClick={() => {

@@ -222,7 +222,13 @@ io.on('connection', (socket) => {
 
   socket.on('notification', (data) => {
     console.log('Received notification:', data);
-    io.emit('notification', data);
+    
+    const userSoceketId = registerdUsers[data.userId];
+    if (userSoceketId) {
+      io.to(userSoceketId).emit('notification', data);
+    } else {
+      console.log(`User with ID: ${data.userId} not found.`);
+    }
   });
 
   socket.on("disconnect", () => {
